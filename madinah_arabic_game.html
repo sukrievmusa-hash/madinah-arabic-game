@@ -32,7 +32,6 @@ header .sub{color:rgba(255,255,255,.7);font-size:calc(.82rem*var(--fs))}
 .main-btn .badge{margin-right:auto;background:var(--teal);color:#fff;font-size:calc(.72rem*var(--fs));padding:4px 10px;border-radius:10px;font-weight:600}
 .main-btn.gold .icon{background:#fff8e6}.main-btn.gold .badge{background:var(--gold);color:#1a1a1a}
 .book-link{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);border-radius:14px;padding:12px 14px;margin:8px 0;text-decoration:none;color:#fff}
-.book-link .t{font-weight:700;font-size:calc(.95rem*var(--fs))}.book-link .s{font-size:calc(.75rem*var(--fs));opacity:.8}
 .more-link{text-align:center;margin:8px 0}
 .more-link button{background:none;border:none;color:rgba(255,255,255,.85);font-size:calc(.92rem*var(--fs));font-family:inherit;cursor:pointer;text-decoration:underline}
 .menu{display:grid;gap:8px;margin-top:8px}
@@ -47,7 +46,12 @@ header .sub{color:rgba(255,255,255,.7);font-size:calc(.82rem*var(--fs))}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),#f5d76e);border-radius:8px;width:0%;transition:width .35s}
 .card{background:#fff;border-radius:20px;padding:20px 16px;box-shadow:0 10px 32px rgba(0,0,0,.16);text-align:center;position:relative}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--teal),var(--gold))}
-.visual{font-size:calc(5rem*var(--fs));line-height:1;margin:4px 0}
+.visual{font-size:calc(5rem*var(--fs));line-height:1;margin:4px 0;min-height:150px;display:flex;align-items:center;justify-content:center}
+.book-pic{width:140px;height:140px;object-fit:contain;border-radius:12px;background:#f7fbfa;box-shadow:0 4px 12px rgba(0,0,0,.08);margin:4px auto;display:block}
+.emoji-pic{font-size:calc(4.5rem * var(--fs));line-height:1;display:block}
+.list-card .book-pic{width:48px;height:48px;margin:0}
+.list-card .emoji-pic{font-size:1.6rem}
+.opt .book-pic{width:64px;height:64px}
 .ar-word{font-size:calc(2.45rem*var(--fs));font-weight:700;color:var(--teal-d);margin:6px 0}
 .ru-word{font-size:calc(1.1rem*var(--fs));color:#5a7a76;margin-bottom:8px;min-height:1.3em}
 .ru-word.hidden{filter:blur(6px);cursor:pointer}
@@ -118,7 +122,7 @@ footer{text-align:center;padding:18px 8px;color:rgba(255,255,255,.5);font-size:c
 </div>
 <a class="book-link" href="https://www.goodwordbooks.com/collections/frontpage" target="_blank" rel="noopener">
 <span style="font-size:1.8rem">📕</span>
-<div><div class="t">Madinah Arabic Reader</div><div class="s">Dr. V. Abdur Rahim · Goodword Books</div></div>
+<div><div style="font-weight:700">Madinah Arabic Reader</div><div style="font-size:.75rem;opacity:.8">Dr. V. Abdur Rahim · Goodword Books</div></div>
 </a>
 <div class="more-link"><button onclick="showMore()">المزيد · Ещё ▾</button></div>
 <div id="more-panel" style="display:none"><div class="menu">
@@ -127,7 +131,7 @@ footer{text-align:center;padding:18px 8px;color:rgba(255,255,255,.5);font-size:c
 <button class="menu-card" onclick="startMode('match')"><div class="icon">🔗</div><div><div class="title">طَابِقْ<span class="nav-ru">Пары</span></div></div><div class="arrow">←</div></button>
 <button class="menu-card" onclick="startMode('weak')"><div class="icon">💪</div><div><div class="title">الصَّعْبَةُ<span class="nav-ru">Сложные</span></div></div><div class="arrow">←</div></button>
 <button class="menu-card" onclick="startMode('objects')"><div class="icon">🏠</div><div><div class="title">الْأَشْيَاءُ<span class="nav-ru">Предметы</span></div></div><div class="arrow">←</div></button>
-<button class="menu-card" onclick="startMode('people')"><div class="icon">👨‍⚕️</div><div><div class="title">النَّاسُ<span class="nav-ru">Люди</span></div></div><div class="arrow">←</div></button>
+<button class="menu-card" onclick="startMode('people')"><div class="icon">👨</div><div><div class="title">النَّاسُ<span class="nav-ru">Люди</span></div></div><div class="arrow">←</div></button>
 <button class="menu-card" onclick="startMode('animals')"><div class="icon">🐪</div><div><div class="title">الْحَيَوَانَاتُ<span class="nav-ru">Животные</span></div></div><div class="arrow">←</div></button>
 <button class="menu-card" onclick="startMode('adjectives')"><div class="icon">✨</div><div><div class="title">الصِّفَاتُ<span class="nav-ru">Прилагательные</span></div></div><div class="arrow">←</div></button>
 <button class="menu-card" onclick="showLists()"><div class="icon">📋</div><div><div class="title">قَوَائِمُ<span class="nav-ru">Списки</span></div></div><div class="arrow">←</div></button>
@@ -209,6 +213,7 @@ footer{text-align:center;padding:18px 8px;color:rgba(255,255,255,.5);font-size:c
 <button type="button" onclick="startDaily()"><span class="nav-ico">📅</span>Сегодня</button>
 <a href="https://www.goodwordbooks.com/collections/frontpage" target="_blank" rel="noopener"><span class="nav-ico">📕</span>Книга</a>
 </nav>
+<script src="images1.js"></script>
 <script src="game.js"></script>
 </body>
 </html>
