@@ -1,1 +1,214 @@
-<!DOCTYPE html><html lang=ar dir=rtl><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Madinah Arabic Game</title><script>location.replace('https://sukrievmusa-hash.github.io/madinah-arabic-game/');</script></head><body><p>Uploading full version — please use the file from chat for now, or wait for next update.</p><p><a href=https://github.com/sukrievmusa-hash/madinah-arabic-game>Repo</a></p></body></html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>دروس المدينة | لعبة العربية</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#d4a017;--gold-l:#f0d78c;--teal:#1a7a74;--teal-d:#0d5c58;--soft:#e8f5f3;--text:#1a2e2c;--ok:#1e9e6a;--err:#c0392b;--fs:1.15}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Naskh Arabic','Cairo',Tahoma,sans-serif;background:linear-gradient(160deg,#0a3d3b,#0f5c57 45%,#147a72);min-height:100vh;color:var(--text);overflow-x:hidden}
+.app{max-width:680px;margin:0 auto;padding:12px 14px;padding-bottom:calc(78px + env(safe-area-inset-bottom,0px))}
+header{text-align:center;padding:14px 8px 6px}
+.logo{font-size:calc(.95rem*var(--fs));color:var(--gold-l)}
+header h1{font-size:calc(1.85rem*var(--fs));font-weight:700;color:#fff}
+header .sub{color:rgba(255,255,255,.7);font-size:calc(.82rem*var(--fs))}
+.screen{display:none}.screen.active{display:block}
+.book-bar,.lesson-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.lesson-row{overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.book-btn,.lesson-pill{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);color:#fff;border-radius:14px;padding:8px 14px;font-size:calc(.85rem*var(--fs));font-weight:600;cursor:pointer;font-family:inherit;flex-shrink:0}
+.book-btn.active,.lesson-pill.active{background:var(--gold);color:#1a1a1a;border-color:var(--gold)}
+.book-btn:disabled{opacity:.35}
+.stats-strip{display:flex;gap:8px;margin-bottom:12px}
+.stat-pill{flex:1;background:rgba(255,255,255,.12);border-radius:12px;padding:9px 6px;text-align:center;color:#fff}
+.stat-pill .num{font-size:calc(1.25rem*var(--fs));font-weight:700;color:var(--gold-l)}
+.stat-pill .lbl{font-size:calc(.68rem*var(--fs));opacity:.85;margin-top:2px;line-height:1.3}
+.main-actions{display:grid;gap:11px;margin-bottom:12px}
+.main-btn{background:#fff;border:none;border-radius:16px;padding:18px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,.15);width:100%;font-family:inherit;text-align:right;min-height:70px}
+.main-btn .icon{font-size:2.2rem;width:54px;height:54px;display:flex;align-items:center;justify-content:center;background:var(--soft);border-radius:12px}
+.main-btn .title{font-size:calc(1.2rem*var(--fs));font-weight:700}
+.main-btn .desc{font-size:calc(.82rem*var(--fs));color:#5a7a76;margin-top:2px}
+.main-btn .badge{margin-right:auto;background:var(--teal);color:#fff;font-size:calc(.72rem*var(--fs));padding:4px 10px;border-radius:10px;font-weight:600}
+.main-btn.gold .icon{background:#fff8e6}.main-btn.gold .badge{background:var(--gold);color:#1a1a1a}
+.book-link{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);border-radius:14px;padding:12px 14px;margin:8px 0;text-decoration:none;color:#fff}
+.book-link .t{font-weight:700;font-size:calc(.95rem*var(--fs))}.book-link .s{font-size:calc(.75rem*var(--fs));opacity:.8}
+.more-link{text-align:center;margin:8px 0}
+.more-link button{background:none;border:none;color:rgba(255,255,255,.85);font-size:calc(.92rem*var(--fs));font-family:inherit;cursor:pointer;text-decoration:underline}
+.menu{display:grid;gap:8px;margin-top:8px}
+.menu-card{background:#fff;border:none;border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.1);width:100%;font-family:inherit;text-align:right}
+.menu-card .icon{font-size:1.7rem;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:var(--soft);border-radius:10px}
+.menu-card .title{font-size:calc(1.02rem*var(--fs));font-weight:700}
+.nav-ru{font-size:.72em;opacity:.78;display:block;margin-top:2px}
+.menu-card .arrow{margin-right:auto;color:var(--teal);opacity:.5}
+.top-bar{display:flex;justify-content:space-between;color:#fff;margin-bottom:10px;font-weight:600;font-size:calc(.9rem*var(--fs))}
+.score-box{background:rgba(255,255,255,.15);padding:5px 12px;border-radius:16px}
+.progress-track{height:7px;background:rgba(255,255,255,.2);border-radius:8px;overflow:hidden;margin-bottom:12px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),#f5d76e);border-radius:8px;width:0%;transition:width .35s}
+.card{background:#fff;border-radius:20px;padding:20px 16px;box-shadow:0 10px 32px rgba(0,0,0,.16);text-align:center;position:relative}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--teal),var(--gold))}
+.visual{font-size:calc(5rem*var(--fs));line-height:1;margin:4px 0}
+.ar-word{font-size:calc(2.45rem*var(--fs));font-weight:700;color:var(--teal-d);margin:6px 0}
+.ru-word{font-size:calc(1.1rem*var(--fs));color:#5a7a76;margin-bottom:8px;min-height:1.3em}
+.ru-word.hidden{filter:blur(6px);cursor:pointer}
+.ru-hint{font-size:calc(.78rem*var(--fs));color:#8aa}
+.speak-row{display:flex;gap:10px;justify-content:center;margin:8px 0}
+.speak-btn{background:var(--teal);color:#fff;border:none;border-radius:50%;width:50px;height:50px;font-size:1.3rem;cursor:pointer}
+.speak-btn.slow{background:#2a8f7a;width:44px;height:44px}
+.q-label{font-size:calc(.95rem*var(--fs));color:#5a7a76;font-weight:600;margin-bottom:6px}
+.options{display:grid;gap:10px}
+.opt{background:#f7fbfa;border:2.5px solid #e0ebe9;border-radius:13px;padding:14px;font-size:calc(1.7rem*var(--fs));font-weight:600;font-family:'Noto Naskh Arabic',serif;cursor:pointer;min-height:52px;display:flex;align-items:center;justify-content:center}
+.opt.correct{background:#d8f5e8;border-color:var(--ok)}
+.opt.wrong{background:#fde8e6;border-color:var(--err)}
+.feedback{margin-top:12px;font-size:calc(1.05rem*var(--fs));font-weight:700;min-height:26px}
+.feedback.ok{color:var(--ok)}.feedback.no{color:var(--err)}
+.mastery-bar{margin-top:8px;font-size:calc(.78rem*var(--fs));color:#5a7a76}
+.dot{width:8px;height:8px;border-radius:50%;background:#ddd;display:inline-block;margin:0 2px}.dot.on{background:var(--ok)}
+.btn-row{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.btn{border:none;border-radius:12px;padding:12px 18px;font-size:calc(1rem*var(--fs));font-weight:700;font-family:inherit;cursor:pointer;min-height:48px}
+.btn-primary{background:linear-gradient(135deg,var(--teal),var(--teal-d));color:#fff}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#b8860b);color:#1a1a1a}
+.btn-ghost{background:rgba(255,255,255,.14);color:#fff;border:1.5px solid rgba(255,255,255,.28)}
+.btn-sm{padding:8px 12px;font-size:calc(.86rem*var(--fs));min-height:40px}
+.list-card{background:#fff;border-radius:14px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.list-card .ar{font-size:calc(1.4rem*var(--fs));font-weight:600}.list-card .ru{font-size:calc(.8rem*var(--fs));color:#7a9}
+.chart-wrap{background:#fff;border-radius:16px;padding:16px;margin-top:12px}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bar-label{width:88px;font-size:calc(.8rem*var(--fs));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;height:12px;background:#eef5f3;border-radius:8px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,#e74c3c,#e67e22);border-radius:8px}
+.result-box{text-align:center;padding:28px 14px}
+.result-emoji{font-size:calc(3.6rem*var(--fs))}
+.result-title{font-size:calc(1.6rem*var(--fs));color:var(--teal-d);margin:6px 0}
+.result-score{font-size:calc(2.5rem*var(--fs));font-weight:800;color:var(--gold)}
+footer{text-align:center;padding:18px 8px;color:rgba(255,255,255,.5);font-size:calc(.72rem*var(--fs))}footer a{color:var(--gold-l)}
+#settings-btn{position:fixed;top:12px;left:12px;z-index:100;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.3);color:#fff;border-radius:50%;width:44px;height:44px;font-size:1.2rem;cursor:pointer}
+#settings-panel{display:none;position:fixed;top:62px;left:12px;z-index:100;background:#fff;border-radius:14px;padding:14px;box-shadow:0 8px 28px rgba(0,0,0,.2);min-width:200px}
+.size-btn{display:block;width:100%;background:#f7fbfa;border:2px solid #e0ebe9;border-radius:10px;padding:9px;margin-bottom:6px;font-size:calc(.9rem*var(--fs));font-weight:600;font-family:inherit;cursor:pointer}
+.size-btn.active{background:#e8f5f3;border-color:var(--teal)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:90;display:flex;justify-content:space-around;background:rgba(10,61,59,.97);border-top:1px solid rgba(255,255,255,.12);padding:8px 2px calc(8px + env(safe-area-inset-bottom,0px))}
+.bottom-nav a,.bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:rgba(255,255,255,.75);font-family:inherit;font-size:calc(.65rem*var(--fs));font-weight:600;cursor:pointer;padding:6px 2px;text-decoration:none}
+.bottom-nav .nav-ico{font-size:1.4rem}
+.empty-msg{text-align:center;padding:24px;color:#5a7a76}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<div class="logo">مَدِينَةُ الْعَرَبِيَّةِ</div>
+<h1>لُعْبَةُ الْكَلِمَاتِ</h1>
+<div class="sub">تَعَلَّمْ • اِحْفَظْ • تَقَدَّمْ</div>
+</header>
+<div class="book-bar">
+<button class="book-btn active" onclick="selectBook(1)">الْكِتَابُ ١</button>
+<button class="book-btn" disabled>الْكِتَابُ ٢</button>
+<button class="book-btn" disabled>الْكِتَابُ ٣</button>
+</div>
+<div id="home" class="screen active">
+<div class="stats-strip">
+<div class="stat-pill"><div class="num" id="st-mastered">٠</div><div class="lbl">مَحْفُوظٌ<br><small>Выучено</small></div></div>
+<div class="stat-pill"><div class="num" id="st-learning">٠</div><div class="lbl">أَتَعَلَّمُ<br><small>Учу</small></div></div>
+<div class="stat-pill"><div class="num" id="st-streak">٠</div><div class="lbl">سِلْسِلَةٌ<br><small>Серия</small></div></div>
+</div>
+<div class="lesson-row" id="lesson-row"></div>
+<div class="main-actions">
+<button class="main-btn gold" onclick="startDaily()"><div class="icon">📅</div><div><div class="title">الْيَوْمَ</div><div class="desc">Ежедневная тренировка</div></div><div class="badge" id="daily-badge">اليوم</div></button>
+<button class="main-btn" onclick="startStudy()"><div class="icon">📖</div><div><div class="title">أَتَعَلَّمُ</div><div class="desc">Карточки</div></div></button>
+<button class="main-btn" onclick="startMode('review')"><div class="icon">✅</div><div><div class="title">أَخْتَبِرُ</div><div class="desc">Квиз</div></div></button>
+</div>
+<a class="book-link" href="https://www.goodwordbooks.com/collections/frontpage" target="_blank" rel="noopener">
+<span style="font-size:1.8rem">📕</span>
+<div><div class="t">Madinah Arabic Reader</div><div class="s">Dr. V. Abdur Rahim · Goodword Books</div></div>
+</a>
+<div class="more-link"><button onclick="showMore()">المزيد · Ещё ▾</button></div>
+<div id="more-panel" style="display:none"><div class="menu">
+<button class="menu-card" onclick="startMode('listen')"><div class="icon">👂</div><div><div class="title">أَسْمَعُ<span class="nav-ru">Слушаю</span></div></div><div class="arrow">←</div></button>
+<button class="menu-card" onclick="startMode('yesno')"><div class="icon">❓</div><div><div class="title">نَعَمْ / لَا<span class="nav-ru">Да/Нет</span></div></div><div class="arrow">←</div></button>
+<button class="menu-card" onclick="startMode('match')"><div class="icon">🔗</div><div><div class="title">طَابِقْ<span class="nav-ru">Пары</span></div></div><div class="arrow">←</div></button>
+<button class="menu-card" onclick="startMode('weak')"><div class="icon">💪</div><div><div class="title">الصَّعْبَةُ<span class="nav-ru">Сложные</span></div></div><div class="arrow">←</div></button>
+<button class="menu-card" onclick="startMode('objects')"><div class="icon">🏠</div><div><div class="title">الْأَشْيَاءُ<span class="nav-ru">Предметы</span></div></div><div class="arrow">←</div></button>
+<button class="menu-card" onclick="startMode('people')"><div class="icon">👨‍⚕️</div><div><div class="title">النَّاسُ<span class="nav-ru">Люди</span></div></div><div class="arrow">←</div></button>
+<button class="menu-card" onclick="startMode('animals')"><div class="icon">🐪</div><div><div class="title">الْحَيَوَانَاتُ<span class="nav-ru">Животные</span></div></div><div class="arrow">←</div></button>
+<button class="menu-card" onclick="startMode('adjectives')"><div class="icon">✨</div><div><div class="title">الصِّفَاتُ<span class="nav-ru">Прилагательные</span></div></div><div class="arrow">←</div></button>
+<button class="menu-card" onclick="showLists()"><div class="icon">📋</div><div><div class="title">قَوَائِمُ<span class="nav-ru">Списки</span></div></div><div class="arrow">←</div></button>
+<button class="menu-card" onclick="showProgress()"><div class="icon">📊</div><div><div class="title">الْإِحْصَائِيَّاتُ<span class="nav-ru">Статистика</span></div></div><div class="arrow">←</div></button>
+</div></div>
+</div>
+<div id="study" class="screen">
+<div class="top-bar"><div>بِطَاقَةٌ <span id="s-num">١</span>/<span id="s-total">١٠</span></div><div class="score-box" id="s-lesson-label"></div></div>
+<div class="progress-track"><div class="progress-fill" id="s-progress"></div></div>
+<div class="card">
+<div class="visual" id="s-visual">🏠</div>
+<div class="ar-word" id="s-ar">بَيْتٌ</div>
+<div class="ru-hint">нажми перевод</div>
+<div class="ru-word hidden" id="s-ru" onclick="this.classList.remove('hidden')">дом</div>
+<div class="speak-row"><button class="speak-btn" onclick="speakCurrent()">🔊</button><button class="speak-btn slow" onclick="speakSlow()">🐢</button></div>
+<div class="mastery-bar" id="s-mastery"></div>
+<div class="btn-row"><button class="btn btn-ghost" onclick="studyPrev()">→ Назад</button><button class="btn btn-primary" onclick="studyNext()">Далее ←</button></div>
+<div class="btn-row"><button class="btn btn-gold btn-sm" onclick="quizFromStudy()">اختبر · Квиз</button></div>
+</div>
+<div class="btn-row" style="margin-top:14px"><button class="btn btn-ghost" onclick="goHome()">→ Меню</button></div>
+</div>
+<div id="quiz" class="screen">
+<div class="top-bar"><div>السُّؤَالُ <span id="q-num">١</span>/<span id="q-total">١٠</span></div><div class="score-box">⭐ <span id="score">٠</span></div></div>
+<div class="progress-track"><div class="progress-fill" id="progress"></div></div>
+<div class="card">
+<div class="visual" id="visual">🏠</div>
+<div class="speak-row"><button class="speak-btn" onclick="speakCurrent()">🔊</button><button class="speak-btn slow" onclick="speakSlow()">🐢</button></div>
+<div class="q-label" id="q-label">مَا هَذَا ؟</div>
+<div class="options" id="options"></div>
+<div class="feedback" id="feedback"></div>
+<div class="mastery-bar" id="mastery-bar"></div>
+<div class="btn-row" id="next-row" style="display:none"><button class="btn btn-ghost" onclick="prevQ()">→ Назад</button><button class="btn btn-primary" onclick="nextQ()">Далее ←</button></div>
+</div>
+<div class="btn-row" style="margin-top:14px"><button class="btn btn-ghost" onclick="goHome()">→ Меню</button></div>
+</div>
+<div id="lists" class="screen">
+<div class="top-bar"><div style="color:#fff;font-weight:700">قَوَائِمُ</div></div>
+<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+<button class="btn btn-sm btn-primary" id="tab-mastered" onclick="renderList('mastered')">Выучено</button>
+<button class="btn btn-sm btn-ghost" id="tab-learning" onclick="renderList('learning')">Учу</button>
+<button class="btn btn-sm btn-ghost" id="tab-unknown" onclick="renderList('unknown')">Не знаю</button>
+</div>
+<div id="list-content"></div>
+<div class="btn-row"><button class="btn btn-ghost" onclick="goHome()">→ Меню</button></div>
+</div>
+<div id="progress-screen" class="screen">
+<div class="top-bar"><div style="color:#fff;font-weight:700">الْإِحْصَائِيَّاتُ</div></div>
+<div class="stats-strip">
+<div class="stat-pill"><div class="num" id="p-mastered">٠</div><div class="lbl">Выучено</div></div>
+<div class="stat-pill"><div class="num" id="p-total">٠</div><div class="lbl">Всего</div></div>
+<div class="stat-pill"><div class="num" id="p-streak">٠</div><div class="lbl">Серия</div></div>
+</div>
+<div class="chart-wrap"><div style="font-weight:700;margin-bottom:12px;color:var(--teal-d)">Ошибки</div><div id="error-chart"></div></div>
+<div class="btn-row" style="margin-top:14px"><button class="btn btn-ghost" onclick="goHome()">→ Меню</button><button class="btn btn-ghost btn-sm" onclick="resetProgress()">Сброс</button></div>
+</div>
+<div id="result" class="screen">
+<div class="card result-box">
+<div class="result-emoji" id="r-emoji">🎉</div>
+<div class="result-title" id="r-title">أَحْسَنْتَ !</div>
+<div class="result-score" id="r-score">٨ / ١٠</div>
+<div id="r-new-mastered" style="margin:12px 0;color:var(--ok);font-weight:600"></div>
+<div class="btn-row"><button class="btn btn-primary" onclick="goHome()">Меню</button><button class="btn btn-gold" onclick="again()">Ещё раз</button></div>
+</div>
+</div>
+<footer>مِنْ كِتَابِ <strong>مَدِينَةُ الْعَرَبِيَّةِ</strong> · <a href="https://www.goodwordbooks.com/collections/frontpage" target="_blank" rel="noopener">Goodword Books</a></footer>
+</div>
+<button id="settings-btn" onclick="toggleSettings()">⚙</button>
+<div id="settings-panel">
+<div style="font-weight:700;margin-bottom:8px;color:#0d5c58">Шрифт</div>
+<button class="size-btn" onclick="setFontSize(0.85)">Маленький</button>
+<button class="size-btn" onclick="setFontSize(1)">Средний</button>
+<button class="size-btn active" onclick="setFontSize(1.15)">Большой</button>
+<button class="size-btn" onclick="setFontSize(1.4)">Очень большой</button>
+</div>
+<nav class="bottom-nav">
+<button type="button" onclick="goHome()"><span class="nav-ico">🏠</span>Меню</button>
+<button type="button" onclick="startStudy()"><span class="nav-ico">📖</span>Учить</button>
+<button type="button" onclick="startMode('review')"><span class="nav-ico">✅</span>Квиз</button>
+<button type="button" onclick="startDaily()"><span class="nav-ico">📅</span>Сегодня</button>
+<a href="https://www.goodwordbooks.com/collections/frontpage" target="_blank" rel="noopener"><span class="nav-ico">📕</span>Книга</a>
+</nav>
+<script src="game.js"></script>
+</body>
+</html>
