@@ -10,7 +10,7 @@
 :root{--bg1:#0a3d3b;--bg2:#0f5c57;--card:#fff;--gold:#d4a017;--gold-light:#f0d78c;--teal:#1a7a74;--teal-dark:#0d5c58;--soft:#e8f5f3;--text:#1a2e2c;--success:#1e9e6a;--error:#c0392b;--shadow:0 10px 36px rgba(0,0,0,.18);--fs:1.15}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Naskh Arabic','Noto Sans Arabic','Cairo',Tahoma,sans-serif;background:linear-gradient(160deg,#0a3d3b 0%,#0f5c57 45%,#147a72 100%);min-height:100vh;color:var(--text);overflow-x:hidden}
-.app{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:12px 14px 50px}
+.app{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:12px 14px 50px;padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))!important}
 header{text-align:center;padding:16px 8px 8px}
 .logo{font-size:calc(1rem * var(--fs));color:var(--gold-light);margin-bottom:2px}
 header h1{font-size:calc(1.9rem * var(--fs));font-weight:700;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.25)}
@@ -26,7 +26,7 @@ header .sub{color:rgba(255,255,255,.7);font-size:calc(.85rem * var(--fs));margin
 .stat-pill .num{font-size:calc(1.25rem * var(--fs));font-weight:700;color:var(--gold-light)}
 .stat-pill .lbl{font-size:calc(.7rem * var(--fs));opacity:.85;margin-top:2px;line-height:1.3}
 .main-actions{display:grid;gap:12px;margin-bottom:14px}
-.main-btn{background:var(--card);border:none;border-radius:18px;padding:20px 18px;display:flex;align-items:center;gap:16px;cursor:pointer;box-shadow:var(--shadow);text-align:right;width:100%;font-family:inherit;transition:.2s}
+.main-btn{background:var(--card);border:none;border-radius:18px;padding:20px 18px;display:flex;align-items:center;gap:16px;cursor:pointer;box-shadow:var(--shadow);text-align:right;width:100%;font-family:inherit;transition:.2s;min-height:72px}
 .main-btn:hover{transform:translateY(-3px)}
 .main-btn .icon{font-size:calc(2.4rem * var(--fs));width:58px;height:58px;display:flex;align-items:center;justify-content:center;background:var(--soft);border-radius:14px;flex-shrink:0}
 .main-btn .title{font-size:calc(1.25rem * var(--fs));font-weight:700;color:var(--text)}
@@ -63,7 +63,7 @@ header .sub{color:rgba(255,255,255,.7);font-size:calc(.85rem * var(--fs));margin
 .speak-btn.slow{background:#2a8f7a;font-size:1.1rem;width:44px;height:44px}
 .q-label{font-size:calc(.95rem * var(--fs));color:#5a7a76;font-weight:600;margin-bottom:6px}
 .options{display:grid;gap:10px}
-.opt{background:#f7fbfa;border:2.5px solid #e0ebe9;border-radius:13px;padding:14px 14px;font-size:calc(1.75rem * var(--fs));font-weight:600;font-family:'Noto Naskh Arabic',serif;cursor:pointer;color:var(--text);direction:rtl}
+.opt{background:#f7fbfa;border:2.5px solid #e0ebe9;border-radius:13px;padding:14px 14px;font-size:calc(1.75rem * var(--fs));font-weight:600;font-family:'Noto Naskh Arabic',serif;cursor:pointer;color:var(--text);direction:rtl;min-height:52px;display:flex;align-items:center;justify-content:center}
 .opt:hover:not(:disabled){border-color:var(--teal);background:#e8f6f4}
 .opt.correct{background:#d8f5e8;border-color:var(--success);color:#0d6b45}
 .opt.wrong{background:#fde8e6;border-color:var(--error);color:#8b1e14}
@@ -74,7 +74,7 @@ header .sub{color:rgba(255,255,255,.7);font-size:calc(.85rem * var(--fs));margin
 .mastery-dots{display:inline-flex;gap:3px;margin-right:6px}
 .dot{width:8px;height:8px;border-radius:50%;background:#ddd}.dot.on{background:var(--success)}
 .btn-row{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
-.btn{border:none;border-radius:12px;padding:12px 20px;font-size:calc(1rem * var(--fs));font-weight:700;font-family:inherit;cursor:pointer}
+.btn{border:none;border-radius:12px;padding:12px 20px;font-size:calc(1rem * var(--fs));font-weight:700;font-family:inherit;cursor:pointer;min-height:48px}
 .btn-primary{background:linear-gradient(135deg,var(--teal),var(--teal-dark));color:#fff}
 .btn-gold{background:linear-gradient(135deg,var(--gold),#b8860b);color:#1a1a1a}
 .btn-ghost{background:rgba(255,255,255,.14);color:#fff;border:1.5px solid rgba(255,255,255,.28)}
@@ -94,12 +94,20 @@ header .sub{color:rgba(255,255,255,.7);font-size:calc(.85rem * var(--fs));margin
 .result-title{font-size:calc(1.7rem * var(--fs));color:var(--teal-dark);margin-bottom:6px}
 .result-score{font-size:calc(2.6rem * var(--fs));font-weight:800;color:var(--gold)}
 footer{text-align:center;padding:22px 8px 8px;color:rgba(255,255,255,.5);font-size:calc(.72rem * var(--fs))}footer strong{color:var(--gold-light)}
-#settings-btn{position:fixed;top:12px;left:12px;z-index:100;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.3);color:#fff;border-radius:50%;width:42px;height:42px;font-size:1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#settings-btn{position:fixed;top:12px;left:12px;z-index:100;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.3);color:#fff;border-radius:50%;width:44px;height:44px;font-size:1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
 #settings-panel{display:none;position:fixed;top:62px;left:12px;z-index:100;background:#fff;border-radius:14px;padding:16px;box-shadow:var(--shadow);min-width:210px;direction:rtl}
 .size-btn{display:block;width:100%;background:#f7fbfa;border:2px solid #e0ebe9;border-radius:10px;padding:9px 12px;margin-bottom:6px;font-size:calc(.92rem * var(--fs));font-weight:600;font-family:inherit;cursor:pointer;color:var(--text)}
 .size-btn.active,.size-btn:hover{background:#e8f5f3;border-color:var(--teal)}
 .empty-msg{text-align:center;padding:28px 14px;color:#5a7a76;font-size:calc(1rem * var(--fs))}
 .study-actions{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:90;display:flex;justify-content:space-around;align-items:center;background:rgba(10,61,59,.97);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.12);padding:8px 4px calc(8px + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 24px rgba(0,0,0,.25)}
+.bottom-nav a,.bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:rgba(255,255,255,.75);font-family:inherit;font-size:calc(.68rem * var(--fs));font-weight:600;cursor:pointer;padding:6px 2px;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.bottom-nav .nav-ico{font-size:1.45rem;line-height:1}
+.bottom-nav a:active,.bottom-nav button:active{color:var(--gold-light)}
+.book-link-card{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);border-radius:14px;padding:12px 14px;margin:10px 0 4px;text-decoration:none;color:#fff}
+.book-link-card .bli{font-size:1.8rem}
+.book-link-card .blt{font-weight:700;font-size:calc(.95rem * var(--fs))}
+.book-link-card .bls{font-size:calc(.75rem * var(--fs));opacity:.8;margin-top:2px}
 </style>
 </head>
 <body>
@@ -126,6 +134,11 @@ footer{text-align:center;padding:22px 8px 8px;color:rgba(255,255,255,.5);font-si
 <button class="main-btn" onclick="startStudy()"><div class="icon">📖</div><div><div class="title">أَتَعَلَّمُ</div><div class="desc">Карточки — учить слова</div></div></button>
 <button class="main-btn" onclick="startMode('review')"><div class="icon">✅</div><div><div class="title">أَخْتَبِرُ</div><div class="desc">Квиз — проверить себя</div></div></button>
 </div>
+<a class="book-link-card" href="https://www.goodwordbooks.com/collections/frontpage" target="_blank" rel="noopener">
+<div class="bli">📕</div>
+<div><div class="blt">Madinah Arabic Reader · الكتاب</div>
+<div class="bls">Учебник Dr. V. Abdur Rahim · Goodword Books</div></div>
+</a>
 <div class="more-link"><button onclick="showMore()">المزيد · Ещё ▾</button></div>
 <div id="more-panel" style="display:none"><div class="menu" style="margin-top:10px">
 <button class="menu-card" onclick="startMode('weak')"><div class="icon">💪</div><div class="info"><div class="title">الْكَلِمَاتُ الصَّعْبَةُ<span class="nav-ar-ru">Сложные слова</span></div></div><div class="arrow">←</div></button>
@@ -213,7 +226,7 @@ footer{text-align:center;padding:22px 8px 8px;color:rgba(255,255,255,.5);font-si
 </div>
 </div>
 </div>
-<footer>مِنْ كِتَابِ <strong>مَدِينَةُ الْعَرَبِيَّةِ</strong> · Madinah Arabic Reader</footer>
+<footer>مِنْ كِتَابِ <strong>مَدِينَةُ الْعَرَبِيَّةِ</strong> · <a href="https://www.goodwordbooks.com/collections/frontpage" target="_blank" rel="noopener" style="color:var(--gold-light)">Goodword Books</a></footer>
 </div>
 <button id="settings-btn" onclick="toggleSettings()">⚙</button>
 <div id="settings-panel">
@@ -223,6 +236,13 @@ footer{text-align:center;padding:22px 8px 8px;color:rgba(255,255,255,.5);font-si
 <button class="size-btn active" onclick="setFontSize(1.15)">كَبِيرٌ · Большой</button>
 <button class="size-btn" onclick="setFontSize(1.4)">كَبِيرٌ جِدًّا · Очень большой</button>
 </div>
+<nav class="bottom-nav" id="bottom-nav">
+<button type="button" onclick="goHome()"><span class="nav-ico">🏠</span>Меню</button>
+<button type="button" onclick="startStudy()"><span class="nav-ico">📖</span>Учить</button>
+<button type="button" onclick="startMode('review')"><span class="nav-ico">✅</span>Квиз</button>
+<button type="button" onclick="startDaily()"><span class="nav-ico">📅</span>Сегодня</button>
+<a href="https://www.goodwordbooks.com/collections/frontpage" target="_blank" rel="noopener"><span class="nav-ico">📕</span>Книга</a>
+</nav>
 <script>
 const LESSONS=[{id:0,name:"الْكُلّ",nameRu:"Все"},{id:1,name:"الدَّرْسُ ١",nameRu:"Урок 1"},{id:2,name:"الدَّرْسُ ٢",nameRu:"Урок 2"},{id:3,name:"الدَّرْسُ ٣",nameRu:"Урок 3"},{id:4,name:"الدَّرْسُ ٤",nameRu:"Урок 4"},{id:5,name:"الدَّرْسُ ٥",nameRu:"Урок 5"}];
 const BOOKS={1:{name:"الْكِتَابُ ١",words:{
