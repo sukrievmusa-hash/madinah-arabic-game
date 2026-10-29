@@ -1,1 +1,140 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>دروس المدينة | لعبة العربية</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#0a3d3b;--bg2:#0f5c57;--card:#fff;--gold:#d4a017;--teal:#1a7a74;--teal-dark:#0d5c58;--soft:#e8f5f3;--text:#1a2e2c;--success:#1e9e6a;--error:#c0392b;--shadow:0 10px 36px rgba(0,0,0,.18);--fs:1.15;--ok:#1e9e6a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Naskh Arabic',Tahoma,sans-serif;background:linear-gradient(160deg,#0a3d3b,#0f5c57 45%,#147a72);min-height:100vh;color:var(--text);overflow-x:hidden}
+.app{max-width:680px;margin:0 auto;padding:12px 14px;padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+.screen{display:none}.screen.active{display:block}
+.card{background:var(--card);border-radius:20px;padding:22px 16px;box-shadow:var(--shadow);text-align:center}
+.visual{min-height:120px;display:flex;align-items:center;justify-content:center;margin:8px 0}
+.book-pic{width:min(180px,52vw);height:min(140px,40vw);object-fit:contain;border-radius:12px;background:#f0f7f5;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.q-label{font-size:calc(.95rem * var(--fs));color:#5a7a76;font-weight:600;margin:8px 0}
+.options{display:grid;gap:10px;margin-top:10px}
+.opt{background:#f7fbfa;border:2.5px solid #e0ebe9;border-radius:13px;padding:14px;font-size:calc(1.75rem * var(--fs));font-weight:600;font-family:'Noto Naskh Arabic',serif;cursor:pointer;color:var(--text);direction:rtl;min-height:52px}
+.opt.correct{background:#d8f5e8;border-color:var(--success)}
+.opt.wrong{background:#fde8e6;border-color:var(--error)}
+.speak-row{display:flex;gap:10px;justify-content:center;margin:8px 0}
+.speak-btn{background:var(--teal);color:#fff;border:none;border-radius:50%;width:50px;height:50px;font-size:1.35rem;cursor:pointer}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:rgba(10,61,59,.97);padding:8px 4px calc(8px + env(safe-area-inset-bottom,0px));z-index:90}
+.bottom-nav button,.bottom-nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:rgba(255,255,255,.75);font-family:inherit;font-size:.68rem;font-weight:600;cursor:pointer;text-decoration:none;padding:6px 2px}
+.nav-ico{font-size:1.45rem}
+.progress-track{height:7px;background:rgba(255,255,255,.2);border-radius:8px;overflow:hidden;margin-bottom:12px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),#f5d76e);border-radius:8px;width:0%}
+.feedback{margin-top:12px;font-size:1.05rem;font-weight:700;min-height:26px}
+.feedback.ok{color:var(--success)}.feedback.no{color:var(--error)}
+.btn{background:var(--teal);color:#fff;border:none;border-radius:12px;padding:12px 20px;font-size:1rem;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-ghost{background:transparent;border:2px solid var(--teal);color:var(--teal)}
+.btn-sm{padding:8px 14px;font-size:.9rem}
+.btn-primary{background:var(--teal);color:#fff}
+.ar-word{font-size:calc(2.5rem * var(--fs));font-weight:700;color:var(--teal-dark);margin:6px 0;direction:rtl}
+.ru-word{font-size:1.15rem;color:#5a7a76;margin-bottom:8px}
+.ru-word.hidden{filter:blur(6px);cursor:pointer}
+.mastery-dots{display:inline-flex;gap:3px}.dot{width:8px;height:8px;border-radius:50%;background:#ddd}.dot.on{background:var(--gold)}
+.main-btn{background:var(--card);border:none;border-radius:18px;padding:18px;display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:var(--shadow);width:100%;font-family:inherit;text-align:right;margin-bottom:10px}
+.main-btn .icon{font-size:2rem;width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:var(--soft);border-radius:12px}
+.lesson-row{display:flex;gap:8px;overflow-x:auto;padding:8px 0}
+.lesson-pill{flex-shrink:0;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.25);color:#fff;border-radius:20px;padding:7px 14px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:inherit}
+.lesson-pill.active{background:var(--gold);color:#1a1a1a}
+header{text-align:center;padding:16px 8px;color:#fff}
+header h1{font-size:1.8rem;font-weight:700}
+.stats-strip{display:flex;gap:8px;margin:10px 0}
+.stat-pill{flex:1;background:rgba(255,255,255,.12);border-radius:12px;padding:8px;text-align:center;color:#fff}
+.stat-pill .num{font-size:1.2rem;font-weight:700;color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<div style="color:var(--gold);font-size:.9rem">مَدِينَةُ الْعَرَبِيَّةِ</div>
+<h1>لُعْبَةُ الْكَلِمَاتِ</h1>
+</header>
+
+<div id="home" class="screen active">
+<div class="stats-strip">
+<div class="stat-pill"><div class="num" id="st-mastered">٠</div><div>حفظ</div></div>
+<div class="stat-pill"><div class="num" id="st-learning">٠</div><div>учу</div></div>
+<div class="stat-pill"><div class="num" id="st-streak">٠</div><div>дней</div></div>
+</div>
+<div class="lesson-row" id="lesson-row"></div>
+<button class="main-btn" onclick="startStudy()"><span class="icon">📖</span><div><div style="font-weight:700">عَلِّمْ · Учить</div></div></button>
+<button class="main-btn" onclick="startMode('review')"><span class="icon">✅</span><div><div style="font-weight:700">اِخْتِبَارٌ · Квиз</div></div></button>
+<button class="main-btn" onclick="startDaily()"><span class="icon">📅</span><div><div style="font-weight:700">الْيَوْمُ · Сегодня</div></div></button>
+<button class="main-btn" onclick="startMode('listen')"><span class="icon">🔊</span><div><div style="font-weight:700">اِسْمَعْ · Слушай</div></div></button>
+<button class="main-btn" onclick="startMode('yesno')"><span class="icon">❓</span><div><div style="font-weight:700">نَعَمْ/لَا · Да/Нет</div></div></button>
+<button class="main-btn" onclick="startMode('match')"><span class="icon">🔗</span><div><div style="font-weight:700">طَابِقْ · Пары</div></div></button>
+</div>
+
+<div id="study" class="screen">
+<div class="card">
+<div style="display:flex;justify-content:space-between;color:#5a7a76;font-size:.85rem"><span id="s-num">١</span>/<span id="s-total">٠</span></div>
+<div class="progress-track"><div class="progress-fill" id="s-progress"></div></div>
+<div class="visual" id="s-visual"></div>
+<div class="ar-word" id="s-ar"></div>
+<div class="ru-word hidden" id="s-ru" onclick="this.classList.remove('hidden')"></div>
+<div class="speak-row"><button class="speak-btn" onclick="speakSlow()">🐢</button><button class="speak-btn" onclick="speakCurrent()">🔊</button></div>
+<div id="s-mastery"></div>
+<div style="margin-top:12px;display:flex;gap:8px;justify-content:center">
+<button class="btn btn-ghost" onclick="studyPrev()">←</button>
+<button class="btn" onclick="studyNext()">→</button>
+</div>
+</div>
+</div>
+
+<div id="quiz" class="screen">
+<div style="display:flex;justify-content:space-between;color:#fff;margin-bottom:8px"><span><span id="q-num">١</span>/<span id="q-total">٠</span></span><span id="score">٠</span></div>
+<div class="progress-track"><div class="progress-fill" id="progress"></div></div>
+<div class="card">
+<div class="visual" id="visual"></div>
+<div class="speak-row"><button class="speak-btn" onclick="speakSlow()">🐢</button><button class="speak-btn" onclick="speakCurrent()">🔊</button></div>
+<div class="q-label" id="q-label">مَا هَذَا ؟</div>
+<div id="mastery-bar"></div>
+<div class="options" id="options"></div>
+<div class="feedback" id="feedback"></div>
+<div id="next-row" style="display:none;gap:8px;justify-content:center;margin-top:12px">
+<button class="btn btn-ghost" onclick="prevQ()">←</button>
+<button class="btn" onclick="nextQ()">→</button>
+</div>
+</div>
+</div>
+
+<div id="result" class="screen">
+<div class="card">
+<div id="r-emoji" style="font-size:3rem">★</div>
+<div id="r-title" style="font-size:1.5rem;font-weight:700;margin:8px 0"></div>
+<div id="r-score" style="font-size:1.3rem"></div>
+<div id="r-new-mastered" style="margin:10px 0;color:var(--success)"></div>
+<button class="btn" onclick="again()" style="margin:8px">مَرَّةً أُخرَى</button>
+<button class="btn btn-ghost" onclick="goHome()">الْقَائِمَة</button>
+</div>
+</div>
+
+<div id="lists" class="screen">
+<div class="card">
+<div style="display:flex;gap:8px;margin-bottom:12px">
+<button class="btn btn-sm btn-primary" id="tab-mastered" onclick="renderList('mastered')">حفظ</button>
+<button class="btn btn-sm btn-ghost" id="tab-learning" onclick="renderList('learning')">учу</button>
+<button class="btn btn-sm btn-ghost" id="tab-unknown" onclick="renderList('unknown')">не знаю</button>
+</div>
+<div id="list-body"></div>
+</div>
+</div>
+</div>
+
+<nav class="bottom-nav">
+<a href="https://www.goodwordbooks.com" target="_blank"><span class="nav-ico">📕</span>Книга</a>
+<button type="button" onclick="startDaily()"><span class="nav-ico">📅</span>Сегодня</button>
+<button type="button" onclick="startMode('review')"><span class="nav-ico">✅</span>Квиз</button>
+<button type="button" onclick="startStudy()"><span class="nav-ico">📖</span>Учить</button>
+<button type="button" onclick="goHome()"><span class="nav-ico">🏠</span>Меню</button>
+</nav>
+
+<script src="images_partial.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
