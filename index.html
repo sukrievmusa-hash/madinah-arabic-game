@@ -6,7 +6,7 @@
 <title>دروس المدينة | لعبة العربية</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg1:#0a3d3b;--bg2:#0f5c57;--card:#fff;--gold:#d4a017;--teal:#1a7a74;--teal-dark:#0d5c58;--soft:#e8f5f3;--text:#1a2e2c;--success:#1e9e6a;--error:#c0392b;--shadow:0 10px 36px rgba(0,0,0,.18);--fs:1.15;--ok:#1e9e6a}
+:root{--bg1:#0a3d3b;--bg2:#0f5c57;--card:#fff;--gold:#d4a017;--teal:#1a7a74;--teal-dark:#0d5c58;--soft:#e8f5f3;--text:#1a2e2c;--success:#1e9e6a;--error:#c0392b;--shadow:0 10px 36px rgba(0,0,0,.18);--fs:1.15}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Naskh Arabic',Tahoma,sans-serif;background:linear-gradient(160deg,#0a3d3b,#0f5c57 45%,#147a72);min-height:100vh;color:var(--text);overflow-x:hidden}
 .app{max-width:680px;margin:0 auto;padding:12px 14px;padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
@@ -43,7 +43,6 @@ header h1{font-size:1.8rem;font-weight:700}
 .ar-word{font-size:calc(2.5rem * var(--fs));font-weight:700;color:var(--teal-dark);margin:6px 0;direction:rtl}
 .ru-word{font-size:1.15rem;color:#5a7a76;margin-bottom:8px}
 .ru-word.hidden{filter:blur(6px);cursor:pointer}
-.mastery-dots{display:inline-flex;gap:3px}.dot{width:8px;height:8px;border-radius:50%;background:#ddd}.dot.on{background:var(--gold)}
 </style>
 </head>
 <body>
@@ -66,15 +65,13 @@ header h1{font-size:1.8rem;font-weight:700}
 <button class="main-btn" onclick="startMode('yesno')"><span class="icon">❓</span><div><div style="font-weight:700">نَعَمْ/لَا · Да/Нет</div></div></button>
 <button class="main-btn" onclick="startMode('match')"><span class="icon">🔗</span><div><div style="font-weight:700">طَابِقْ · Пары</div></div></button>
 </div>
-<div id="study" class="screen">
-<div class="card">
+<div id="study" class="screen"><div class="card">
 <div style="display:flex;justify-content:space-between;color:#5a7a76;font-size:.85rem"><span id="s-num">١</span>/<span id="s-total">٠</span></div>
 <div class="progress-track"><div class="progress-fill" id="s-progress"></div></div>
 <div class="visual" id="s-visual"></div>
 <div class="ar-word" id="s-ar"></div>
 <div class="ru-word hidden" id="s-ru" onclick="this.classList.remove('hidden')"></div>
 <div class="speak-row"><button class="speak-btn" onclick="speakSlow()">🐢</button><button class="speak-btn" onclick="speakCurrent()">🔊</button></div>
-<div id="s-mastery"></div>
 <div style="margin-top:12px;display:flex;gap:8px;justify-content:center">
 <button class="btn btn-ghost" onclick="studyPrev()">←</button>
 <button class="btn" onclick="studyNext()">→</button>
@@ -86,19 +83,16 @@ header h1{font-size:1.8rem;font-weight:700}
 <div class="visual" id="visual"></div>
 <div class="speak-row"><button class="speak-btn" onclick="speakSlow()">🐢</button><button class="speak-btn" onclick="speakCurrent()">🔊</button></div>
 <div class="q-label" id="q-label">مَا هَذَا ؟</div>
-<div id="mastery-bar"></div>
 <div class="options" id="options"></div>
 <div class="feedback" id="feedback"></div>
 <div id="next-row" style="display:none;gap:8px;justify-content:center;margin-top:12px">
 <button class="btn btn-ghost" onclick="prevQ()">←</button>
 <button class="btn" onclick="nextQ()">→</button>
 </div></div></div>
-<div id="result" class="screen">
-<div class="card">
+<div id="result" class="screen"><div class="card">
 <div id="r-emoji" style="font-size:3rem">★</div>
 <div id="r-title" style="font-size:1.5rem;font-weight:700;margin:8px 0"></div>
 <div id="r-score" style="font-size:1.3rem"></div>
-<div id="r-new-mastered" style="margin:10px 0;color:var(--success)"></div>
 <button class="btn" onclick="again()" style="margin:8px">مَرَّةً أُخرَى</button>
 <button class="btn btn-ghost" onclick="goHome()">الْقَائِمَة</button>
 </div></div>
@@ -114,6 +108,8 @@ header h1{font-size:1.8rem;font-weight:700}
 <script src="p0.js"></script>
 <script src="p1.js"></script>
 <script src="p2.js"></script>
+<script src="p3.js"></script>
+<script src="p4.js"></script>
 <script src="game.js"></script>
 </body>
 </html>
