@@ -33,7 +33,7 @@ h1{font-size:26px;letter-spacing:-.02em;margin:4px 0 6px;font-weight:600}
 .cnt{margin-left:auto;color:var(--mute);font-size:14px;font-variant-numeric:tabular-nums}
 .stage{display:flex;flex-direction:column;align-items:center;gap:14px}
 .pic{width:min(340px,100%);aspect-ratio:4/3;background:#fff;border:1px solid var(--line);border-radius:18px;display:grid;place-items:center;overflow:hidden}
-.pic img{max-width:92%;max-height:92%;object-fit:contain}
+.pic{position:relative}.pic img{position:absolute;inset:4%;width:92%;height:92%;object-fit:contain}
 .q{color:var(--mute);font-size:14px;letter-spacing:.02em;text-transform:uppercase}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
 .opt{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;border:1.5px solid var(--line);background:#fff;border-radius:16px;padding:14px 8px;font-size:34px;line-height:1.35;transition:.12s;position:relative;min-height:70px;display:grid;place-items:center}
@@ -41,7 +41,7 @@ h1{font-size:26px;letter-spacing:-.02em;margin:4px 0 6px;font-weight:600}
 .opt .k{position:absolute;left:10px;top:8px;font:600 12px Inter,system-ui,sans-serif;color:#5b6862}.opt.ok .k,.opt.bad .k{color:#3d4a45}
 .opt.ok{background:var(--okbg);border-color:var(--ok)}.opt.bad{background:var(--badbg);border-color:var(--bad);animation:sh .3s}
 .opt.lock{cursor:default}
-.opt.pics{padding:8px;aspect-ratio:4/3}.opt.pics img{max-width:100%;max-height:100%;object-fit:contain}
+.opt.pics{padding:0;aspect-ratio:4/3;display:block;overflow:hidden}.opt.pics img{position:absolute;inset:10px;width:calc(100% - 20px);height:calc(100% - 20px);object-fit:contain}.opt.pics .k{z-index:1;background:rgba(255,255,255,.85);border-radius:6px;padding:0 4px}
 @keyframes sh{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 .fb{width:100%;border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:12px;justify-content:space-between}
 .fb.ok{background:var(--okbg);color:#163d2b}.fb.bad{background:var(--badbg);color:#5a241c}
