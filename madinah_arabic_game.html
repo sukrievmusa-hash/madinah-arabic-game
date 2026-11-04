@@ -813,7 +813,7 @@ const VIDEOS=[
 const VIDEO_TOTAL=24;
 const PL_IDS=()=>{try{return JSON.parse(localStorage.getItem('madinah_pl')||'{}')}catch(e){return{}}};
 function plSave(o){try{localStorage.setItem('madinah_pl',JSON.stringify({...PL_IDS(),...o}))}catch(e){}}
-const vidOf=n=>{const c=PL_IDS(),fromPl=c.ids&&c.ids[n-1]?{id:c.ids[n-1]}:{},lm=c.map&&c.map[n]?{id:c.map[n]}:{},tt=c.t&&c.t[n]?{t:c.t[n]}:{};
+const vidOf=n=>{const c=PL_IDS(),fromPl=n>=3&&c.ids&&c.ids[n-2]?{id:c.ids[n-2]}:{},lm=c.map&&c.map[n]?{id:c.map[n]}:{},tt=c.t&&c.t[n]?{t:c.t[n]}:{};
   return Object.assign({n,id:null,t:n===24?'24 урок · Общее повторение':`${n} урок`,les:n===24?0:n},fromPl,lm,tt,VIDEOS.find(v=>v.n===n)||{})};
 // YouTube IFrame API: плейлист сам отдаёт коды всех 24 видео
 let ytReady=null;
@@ -836,7 +836,7 @@ function ytMount(n){
     ytPlayer=new YT.Player('vplayer',{host:'https://www.youtube-nocookie.com',width:'100%',height:'100%',
       videoId:v.id||undefined,playerVars:v.id?pv:{...pv,listType:'playlist',list:PLAYLIST},
       events:{
-        onReady:e=>{if(!v.id)e.target.cuePlaylist({listType:'playlist',list:PLAYLIST,index:n-1})},
+        onReady:e=>{if(!v.id)e.target.cuePlaylist({listType:'playlist',list:PLAYLIST,index:n>=3?n-2:n-1})},
         onStateChange:e=>{try{
           const pl=e.target.getPlaylist&&e.target.getPlaylist();
           if(pl&&pl.length)plSave({ids:pl});
