@@ -238,7 +238,25 @@ button:focus-visible,select:focus-visible,input:focus-visible,.mode:focus-visibl
 .iqr.now{color:#ffd88a}
 .iq-num{color:rgba(233,199,123,.55);font-size:.62em}
 .iq-ru{font-size:clamp(17px,4.4vw,22px);line-height:1.6;text-align:center}
-.iq-end{white-space:nowrap}</style>
+.iq-end{white-space:nowrap}
+.vgo{margin-top:var(--s3)}
+.vlist{display:grid;gap:var(--s2);margin-top:var(--s3)}
+.vrow{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:var(--s3);min-height:56px;padding:10px 14px;
+  border:1.5px solid var(--c-line);border-radius:var(--r-m);background:var(--c-paper);transition:.15s}
+.vrow:hover{border-color:var(--c-primary-2);transform:translateY(-1px)}
+.vrow.soon{opacity:.72}
+.vn{flex:none;width:34px;height:34px;border-radius:50%;background:var(--c-primary);color:#fff;display:grid;place-items:center;font-weight:600;font-size:var(--t-s)}
+.vrow.soon .vn{background:#cfc7b3;color:var(--c-ink)}
+.vt2{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.vt2 b{font-size:var(--t-m)}.vt2 small{font-size:var(--t-xs);color:var(--c-mute)}
+.vchip{flex:none;font-size:12px;padding:3px 9px;border-radius:999px;background:#ece6d6;color:var(--c-mute)}
+.vchip.ok{background:var(--c-ok-bg);color:var(--c-ok-ink)}
+.vframe{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--r-m);overflow:hidden;background:#000;margin:var(--s3) 0}
+.vframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vsoon{padding:var(--s5) var(--s4);border:1.5px dashed var(--c-line);border-radius:var(--r-m);text-align:center;color:var(--c-mute);margin:var(--s3) 0}
+.vact{display:grid;gap:var(--s3);justify-items:center}
+.vact a.btn{text-decoration:none;display:inline-flex;align-items:center}
+.vnav{display:flex;justify-content:space-between;margin-top:var(--s4)}
+.top>.cnt:last-child{margin-left:auto}</style>
 </head>
 <body>
 <div class="wrap">
@@ -490,6 +508,7 @@ function home(){
   <div class="prog"><i style="width:${pool.length?m/pool.length*100:0}%"></i></div>
   <div class="lest">Выучено ${m} из ${pool.length}${S.best?` · лучшая серия ${S.best}`:''}</div>
   <button class="start" id="go"><b>▶ Заниматься</b><span>10 заданий вперемешку${S.les?` · урок ${S.les}`:''}</span></button>
+  <button class="grp vgo" id="vids"><span class="e">🎬</span><span class="gt"><b>Видеоуроки</b><small>Устаз Абдуллах · смотреть и закреплять</small></span><span class="cnt2">${VIDEO_TOTAL}</span></button>
   <div class="gsub">Или выберите занятие сами</div>
   <div class="groups">${GROUPS.map(g=>{const n=liveModes(g.m).length;
     return `<button class="grp${n?'':' off'}" data-g="${g.id}"${n?'':' disabled'}><span class="e">${g.e}</span><span class="gt"><b>${g.t}</b><small>${n?g.d:'нет заданий для этого урока'}</small></span><span class="cnt2">${n}</span></button>`}).join('')}</div>
@@ -502,9 +521,10 @@ function home(){
   <span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" id="mtest">🎤 Микрофон</button><button class="btn ghost sm" id="reset">Сбросить</button></span></div><div id="mres" class="mic-note" style="text-align:left;margin-top:10px"></div>`;
   $('#lessel').onchange=e=>{S.les=+e.target.value;save();home()};
   $('#go').onclick=()=>start('mix');
+  $('#vids').onclick=videos;
   $('#mvoc').onclick=()=>start('vocab');
   $('#mblitz').onclick=()=>{if(modeOff(modeById('blitz')))return alert('В этом уроке мало картинок для блица — выберите другой урок.');start('blitz')};
-  $$('.grp:not(.off)').forEach(b=>b.onclick=()=>group(b.dataset.g));
+  $$('.grp[data-g]:not(.off)').forEach(b=>b.onclick=()=>group(b.dataset.g));
   $('#ru').onchange=e=>{S.ru=e.target.checked;save()};
   $('#iqon').onchange=e=>{S.iqra=e.target.checked;save()};
   $('#mtest').onclick=micTest;
@@ -551,7 +571,7 @@ const IQRA_LAST=IQRA.length;
 const AR_NUM='١٢٣٤٥';
 let iq=null;
 function sessionOpen(){return !!(R&&R.qs&&R.i<R.n&&!['blitz'].includes(R.startId))}
-function tryLeave(){if(sessionOpen()&&S.iqra!==false)return iqraShow();home()}
+function tryLeave(){if(sessionOpen()&&S.iqra!==false)return iqraShow();const v=R&&R.video;v?video(v):home()}
 function iqraStop(){if(!iq)return;iq.stopped=true;cancelAnimationFrame(iq.raf);clearTimeout(iq.tm);
   try{iq.a.pause();iq.a.removeAttribute('src');iq.a.load()}catch(e){}
   const o=$('#iqra');if(o)o.remove();document.removeEventListener('keydown',iq.key,true);iq=null}
@@ -595,7 +615,7 @@ function iqraShow(){
       key:e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();iqraStop()}}};
   document.addEventListener('keydown',iq.key,true);
   $('#iqgo').onclick=()=>iqraStop();
-  $('#iqout').onclick=()=>{iqraStop();home()};
+  $('#iqout').onclick=()=>{const v=R&&R.video;iqraStop();v?video(v):home()};
   $('#iqmute').onclick=()=>{if(!iq)return;if(!iq.started&&!iq.silent&&iq.a.paused){iq.a.muted=false;$('#iqmute').textContent='🔇 Тише';return iqraPlay()}
     iq.a.muted=!iq.a.muted;$('#iqmute').textContent=iq.a.muted?'🔊 Звук':'🔇 Тише'};
   iqraAyah(1);
@@ -650,6 +670,52 @@ function iqraPlay(){
   a.onended=()=>iqraNext();
   a.src=s.url(num);a.volume=1;
   const pr=a.play();if(pr)pr.catch(err=>{if(err&&err.name==='NotAllowedError'&&$('#iqst'))$('#iqst').textContent='Нажмите «🔊 Звук», чтобы услышать чтение'})
+}
+
+
+/* ===== ВИДЕОУРОКИ — плейлист «Мединский курс 1 том» (Muallim Sani, устаз Абдуллах) ===== */
+const PLAYLIST='PLI-lrBcF7x11n59K1bqjMQHK0BrjKKZMf';
+// id — YouTube-код видео; les — урок книги, по которому даются задания.
+// Новое видео: впишите id, название и урок книги.
+const VIDEOS=[
+ {n:1,id:'sDc1mFhG93A',t:'1 урок · Мединский курс 1 том',les:1}
+];
+const VIDEO_TOTAL=24;
+const vidOf=n=>VIDEOS.find(v=>v.n===n)||{n,id:null,t:`${n} урок`,les:null};
+const vState=n=>(S.vid||{})[n]||{};
+function vSet(n,o){S.vid=S.vid||{};S.vid[n]={...vState(n),...o};save()}
+function videos(){
+  setKeys(null);R=null;
+  const done=Object.values(S.vid||{}).filter(v=>v.best>=7).length;
+  app.innerHTML=`<div class="top"><button class="back" id="bk">← Меню</button></div>
+  <h1>🎬 Видеоуроки</h1><p class="sub">«Мединский курс 1 том» · устаз Абдуллах. Посмотрите урок, затем пройдите задания по нему.</p>
+  <div class="lest">Пройдено ${done} из ${VIDEO_TOTAL}</div>
+  <div class="vlist">${Array.from({length:VIDEO_TOTAL},(_,i)=>{const v=vidOf(i+1),s=vState(i+1);
+    const st=s.best!=null?`<span class="vchip ok">★ ${s.best}/10</span>`:s.seen?'<span class="vchip">просмотрено</span>':'';
+    return `<button class="vrow${v.id?'':' soon'}" data-n="${v.n}"><span class="vn">${v.n}</span>
+      <span class="vt2"><b>${v.t}</b><small>${v.les?`Урок книги ${v.les} · ${LESSONS[v.les-1].t}`:'Задания появятся позже'}</small></span>${st}</button>`}).join('')}</div>`;
+  $('#bk').onclick=home;
+  $$('.vrow').forEach(b=>b.onclick=()=>video(+b.dataset.n));
+}
+function video(n){
+  setKeys(null);R=null;
+  const v=vidOf(n),s=vState(n);
+  const yt=v.id?`https://www.youtube.com/watch?v=${v.id}&list=${PLAYLIST}`:`https://www.youtube.com/watch?list=${PLAYLIST}&index=${n}`;
+  app.innerHTML=`<div class="top"><button class="back" id="bk">← К списку</button><span class="cnt">${n} / ${VIDEO_TOTAL}</span></div>
+  <h1>${v.t}</h1>
+  ${v.id?`<div class="vframe"><iframe src="https://www.youtube-nocookie.com/embed/${v.id}?rel=0&playsinline=1" title="${v.t}"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>`
+    :`<div class="vsoon">Это видео ещё не добавлено в игру. Его можно посмотреть на YouTube.</div>`}
+  <div class="vact">
+    ${v.les?`<button class="start" id="vq"><b>✍️ Задания по уроку</b><span>10 заданий · урок книги ${v.les}${s.best!=null?` · лучший результат ${s.best}/10`:''}</span></button>`:''}
+    <a class="btn ghost sm" id="vyt" href="${yt}" target="_blank" rel="noopener">▶ Открыть на YouTube</a>
+  </div>
+  <div class="vnav">${n>1?`<button class="btn ghost sm" id="vprev">← ${n-1} урок</button>`:'<span></span>'}${n<VIDEO_TOTAL?`<button class="btn ghost sm" id="vnext">${n+1} урок →</button>`:''}</div>`;
+  vSet(n,{seen:true});
+  $('#bk').onclick=videos;
+  if($('#vq'))$('#vq').onclick=()=>{S.les=v.les;save();start('mix');R.video=n};
+  if($('#vprev'))$('#vprev').onclick=()=>video(n-1);
+  if($('#vnext'))$('#vnext').onclick=()=>video(n+1);
 }
 
 /* --- навигация по вопросам --- */
@@ -841,6 +907,8 @@ function finish(){
   <h1>${R.ok} из ${R.n}</h1><p class="sub">Слабые слова будут попадаться чаще — так работает интервальное повторение.</p>
   <div class="row"><button class="btn" id="ag">Ещё раунд</button><button class="btn ghost" id="hm">В меню</button></div></div>`;
   const m=R.startId||R.m;$('#ag').onclick=()=>start(m);$('#hm').onclick=home;
+  if(R.video){const n=R.video;vSet(n,{best:Math.max(vState(n).best||0,R.ok)});
+    $('#ag').onclick=()=>{start('mix');R.video=n};$('#hm').textContent='К видеоуроку';$('#hm').onclick=()=>video(n)}
 }
 save();home();
 </script>
