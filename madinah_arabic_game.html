@@ -251,7 +251,8 @@ button:focus-visible,select:focus-visible,input:focus-visible,.mode:focus-visibl
 .vchip{flex:none;font-size:12px;padding:3px 9px;border-radius:999px;background:#ece6d6;color:var(--c-mute)}
 .vchip.ok{background:var(--c-ok-bg);color:var(--c-ok-ink)}
 .vframe{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--r-m);overflow:hidden;background:#000;margin:var(--s3) 0}
-.vframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vframe iframe,.vframe #vplayer{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vframe .vsoon{position:absolute;inset:0;margin:0;display:grid;place-items:center;background:var(--c-paper)}
 .vsoon{padding:var(--s5) var(--s4);border:1.5px dashed var(--c-line);border-radius:var(--r-m);text-align:center;color:var(--c-mute);margin:var(--s3) 0}
 .vact{display:grid;gap:var(--s3);justify-items:center}
 .vact a.btn{text-decoration:none;display:inline-flex;align-items:center}
@@ -528,7 +529,7 @@ function setKeys(f){if(keyH)document.removeEventListener('keydown',keyH);
   document.addEventListener('keydown',keyH)}
 
 function home(){
-  setKeys(null);R=null;try{speechSynthesis.cancel();if(window._a)window._a.pause()}catch(e){}
+  setKeys(null);R=null;if(typeof ytStop==='function')ytStop();try{speechSynthesis.cancel();if(window._a)window._a.pause()}catch(e){}
   const pool=WORDS.filter(inLes),m=pool.filter(w=>(S.box[w.ar]||0)>=4).length,live=allLive().length;
   app.innerHTML=`<h1>Мединский курс</h1>
   <p class="sub">Две книги: ${sl(WORDS.length)} и упражнения из учебника. Выберите урок и начните.</p>
@@ -709,21 +710,57 @@ const PLAYLIST='PLI-lrBcF7x11n59K1bqjMQHK0BrjKKZMf';
 // id — YouTube-код видео; les — урок книги, по которому даются задания.
 // Новое видео: впишите id, название и урок книги.
 const VIDEOS=[
- {n:1,id:'sDc1mFhG93A',t:'1 урок · Мединский курс 1 том',les:1}
+ {n:1,id:'sDc1mFhG93A',t:'1 УРОК. МЕДИНСКИЙ КУРС 1 ТОМ || Устаз Абдуллах',les:1},
+ {n:3,id:'LE48ajceOis',t:'3 УРОК. МЕДИНСКИЙ КУРС 1 ТОМ || Устаз Абдуллах',les:3}
 ];
 const VIDEO_TOTAL=24;
-const vidOf=n=>Object.assign({n,id:null,t:n===24?'24 урок · Общее повторение':`${n} урок`,les:n===24?0:n},VIDEOS.find(v=>v.n===n)||{});
+const PL_IDS=()=>{try{return JSON.parse(localStorage.getItem('madinah_pl')||'{}')}catch(e){return{}}};
+function plSave(o){try{localStorage.setItem('madinah_pl',JSON.stringify({...PL_IDS(),...o}))}catch(e){}}
+const vidOf=n=>{const c=PL_IDS(),fromPl=c.ids&&c.ids[n-1]?{id:c.ids[n-1]}:{},tt=c.t&&c.t[n]?{t:c.t[n]}:{};
+  return Object.assign({n,id:null,t:n===24?'24 урок · Общее повторение':`${n} урок`,les:n===24?0:n},fromPl,tt,VIDEOS.find(v=>v.n===n)||{})};
+// YouTube IFrame API: плейлист сам отдаёт коды всех 24 видео
+let ytReady=null;
+function ytApi(){if(ytReady)return ytReady;
+  ytReady=new Promise((ok,no)=>{if(window.YT&&YT.Player)return ok();
+    const prev=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=()=>{prev&&prev();ok()};
+    const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';s.onerror=()=>{ytReady=null;no()};document.head.appendChild(s);
+    setTimeout(()=>no(new Error('timeout')),12000)});
+  return ytReady}
+let ytPlayer=null;
+function ytMount(n){
+  const box=$('#vbox');if(!box)return;
+  if(ytPlayer){try{ytPlayer.destroy()}catch(e){}ytPlayer=null}
+  box.innerHTML='<div id="vplayer"></div>';
+  const v=vidOf(n);
+  const fail=()=>{if(!$('#vbox'))return;$('#vbox').innerHTML=`<div class="vsoon">Видео не загрузилось здесь — откройте его на YouTube кнопкой ниже. Задания уже готовы.</div>`};
+  ytApi().then(()=>{
+    if(!$('#vplayer'))return;
+    const pv={rel:0,playsinline:1,modestbranding:1};
+    ytPlayer=new YT.Player('vplayer',{host:'https://www.youtube-nocookie.com',width:'100%',height:'100%',
+      videoId:v.id||undefined,playerVars:v.id?pv:{...pv,listType:'playlist',list:PLAYLIST},
+      events:{
+        onReady:e=>{if(!v.id)e.target.cuePlaylist({listType:'playlist',list:PLAYLIST,index:n-1})},
+        onStateChange:e=>{try{
+          const pl=e.target.getPlaylist&&e.target.getPlaylist();
+          if(pl&&pl.length)plSave({ids:pl});
+          const d=e.target.getVideoData&&e.target.getVideoData();
+          if(d&&d.title){const c=PL_IDS();plSave({t:{...(c.t||{}),[n]:d.title}});const h=$('#vtitle');if(h)h.textContent=d.title}
+        }catch(err){}},
+        onError:fail}});
+  }).catch(fail);
+}
 const vState=n=>(S.vid||{})[n]||{};
 function vSet(n,o){S.vid=S.vid||{};S.vid[n]={...vState(n),...o};save()}
+function ytStop(){if(ytPlayer){try{ytPlayer.destroy()}catch(e){}ytPlayer=null}}
 function videos(){
-  setKeys(null);R=null;
+  setKeys(null);R=null;ytStop();
   const done=Object.values(S.vid||{}).filter(v=>v.best>=7).length;
   app.innerHTML=`<div class="top"><button class="back" id="bk">← Меню</button></div>
   <h1>🎬 Видеоуроки</h1><p class="sub">«Мединский курс 1 том» · устаз Абдуллах. Посмотрите урок, затем пройдите задания по нему.</p>
   <div class="lest">Пройдено ${done} из ${VIDEO_TOTAL}</div>
   <div class="vlist">${Array.from({length:VIDEO_TOTAL},(_,i)=>{const v=vidOf(i+1),s=vState(i+1);
     const st=s.best!=null?`<span class="vchip ok">★ ${s.best}/10</span>`:s.seen?'<span class="vchip">просмотрено</span>':'';
-    return `<button class="vrow${v.id?'':' soon'}" data-n="${v.n}"><span class="vn">${v.n}</span>
+    return `<button class="vrow" data-n="${v.n}"><span class="vn">${v.n}</span>
       <span class="vt2"><b>${v.t}</b><small>${v.les?`${v.les<=10?'Книга 1':'Книга 2'} · урок ${v.les<=10?v.les:v.les-10} · ${LESSONS[v.les-1].t}`:'Все уроки обеих книг'}</small></span>${st}</button>`}).join('')}</div>`;
   $('#bk').onclick=home;
   $$('.vrow').forEach(b=>b.onclick=()=>video(+b.dataset.n));
@@ -731,20 +768,19 @@ function videos(){
 function video(n){
   setKeys(null);R=null;
   const v=vidOf(n),s=vState(n);
-  const yt=v.id?`https://www.youtube.com/watch?v=${v.id}&list=${PLAYLIST}`:`https://www.youtube.com/watch?list=${PLAYLIST}&index=${n}`;
+  const yt=v.id?`https://www.youtube.com/watch?v=${v.id}&list=${PLAYLIST}&index=${n}`:`https://www.youtube.com/watch?list=${PLAYLIST}&index=${n}`;
   app.innerHTML=`<div class="top"><button class="back" id="bk">← К списку</button><span class="cnt">${n} / ${VIDEO_TOTAL}</span></div>
-  <h1>${v.t}</h1>
-  ${v.id?`<div class="vframe"><iframe src="https://www.youtube-nocookie.com/embed/${v.id}?rel=0&playsinline=1" title="${v.t}"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>`
-    :`<div class="vsoon">Видео откроется на YouTube — кнопка ниже. Задания уже готовы.</div>`}
+  <h1 id="vtitle">${v.t}</h1>
+  <div class="vframe" id="vbox"></div>
   <div class="vact">
     <button class="start" id="vq"><b>✍️ Задания по уроку</b><span>10 заданий · ${v.les?`${v.les<=10?'книга 1':'книга 2'}, урок ${v.les<=10?v.les:v.les-10}`:'обе книги'}${s.best!=null?` · лучший результат ${s.best}/10`:''}</span></button>
     <a class="btn ghost sm" id="vyt" href="${yt}" target="_blank" rel="noopener">▶ Открыть на YouTube</a>
   </div>
   <div class="vnav">${n>1?`<button class="btn ghost sm" id="vprev">← ${n-1} урок</button>`:'<span></span>'}${n<VIDEO_TOTAL?`<button class="btn ghost sm" id="vnext">${n+1} урок →</button>`:''}</div>`;
   vSet(n,{seen:true});
+  ytMount(n);
   $('#bk').onclick=videos;
-  $('#vq').onclick=()=>{S.les=v.les;save();start('mix');if(R)R.video=n};
+  $('#vq').onclick=()=>{ytStop();S.les=v.les;save();start('mix');if(R)R.video=n};
   if($('#vprev'))$('#vprev').onclick=()=>video(n-1);
   if($('#vnext'))$('#vnext').onclick=()=>video(n+1);
 }
