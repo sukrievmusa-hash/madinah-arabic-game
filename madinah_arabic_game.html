@@ -313,7 +313,22 @@ document.addEventListener('pointerdown',function unlock(){
   try{if('speechSynthesis'in window){const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u)}}catch(e){}
   unlocked=true;if(tapNote){tapNote.remove();tapNote=null}
   document.removeEventListener('pointerdown',unlock,true)},true);
-function speak(t){const s=strip(t);
+// 1) заранее записанный звук с сайта (audio/<hash>.mp3) — работает везде без настроек
+const audKey=s=>s.replace(/[ً-ْٰـ]/g,'').replace(/\s+/g,' ').trim();
+const fnv=s=>{let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(16).padStart(8,'0')};
+const ONLINE=/^https?:$/.test(location.protocol);
+let fileBad=0;
+function speakFile(t,fallback){
+  if(!ONLINE||fileBad>=3)return fallback();
+  try{window._f=window._f||new Audio();const a=window._f;let done=false;
+    try{speechSynthesis.cancel()}catch(e){}if(window._a)try{window._a.pause()}catch(e){}
+    a.onplaying=()=>{done=true;fileBad=0;sndInfo={how:'file',ok:true}};
+    a.onerror=()=>{if(done)return;done=true;fileBad++;fallback()};
+    a.src='audio/'+fnv(audKey(t))+'.mp3';
+    const p=a.play();p&&p.catch(e=>{if(e&&e.name==='NotAllowedError'){done=true;needTap()}})}
+  catch(e){fallback()}}
+function speak(t){speakFile(t,()=>speakDevice(t))}
+function speakDevice(t){const s=strip(t);
   const ss='speechSynthesis'in window?speechSynthesis:null;
   const list=ss?ss.getVoices():[];
   if(ss&&(voice||!list.length)){ // арабский голос есть — или Android ещё не отдал список: пробуем системный
@@ -331,7 +346,7 @@ function soundTest(){
   speak('بَيْتٌ');
   setTimeout(()=>{const v=voice?voice.name:null;
     out.innerHTML=sndInfo.ok
-      ?(sndInfo.how==='sys'?`✅ Звук работает — системный голос${v?' «'+v+'»':''}.`:'✅ Звук работает — голос из интернета.')
+      ?(sndInfo.how==='file'?'✅ Звук работает — записанный голос с сайта.':sndInfo.how==='sys'?`✅ Звук работает — системный голос${v?' «'+v+'»':''}.`:'✅ Звук работает — голос из интернета.')
       :`❌ Звук не включился.<br>${/Android/i.test(navigator.userAgent)?SAMSUNG_TTS:'Проверьте громкость и интернет, затем обновите страницу.'}`},3500)}
 const SAMSUNG_TTS='Samsung: Настройки → Общие настройки → Язык и ввод → Синтез речи (Преобразование текста в речь) → '
  +'«Предпочитаемый модуль» → <b>Синтезатор речи Google</b> → ⚙️ → «Установить голосовые данные» → <b>Арабский</b> → скачать. '
