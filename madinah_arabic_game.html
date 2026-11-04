@@ -205,7 +205,36 @@ h1{font-size:var(--t-h);line-height:1.2}
 button:focus-visible,select:focus-visible,input:focus-visible,.mode:focus-visible,.grp:focus-visible{
   outline:3px solid var(--c-accent);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-.nt{font-size:1.35em;line-height:1.4;display:inline-block;vertical-align:middle;color:var(--c-ink)}.nopic{font-family:var(--f-ui);font-size:var(--t-xl);font-weight:600;color:var(--c-primary)}</style>
+.nt{font-size:1.35em;line-height:1.4;display:inline-block;vertical-align:middle;color:var(--c-ink)}.nopic{font-family:var(--f-ui);font-size:var(--t-xl);font-weight:600;color:var(--c-primary)}
+#iqra{position:fixed;inset:0;z-index:50;display:flex;justify-content:center;align-items:flex-start;overflow-y:auto;
+  padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));
+  background:radial-gradient(ellipse at center,rgba(18,52,46,.985),rgba(6,20,18,.995));animation:iqin .6s ease}
+@keyframes iqin{from{opacity:0}to{opacity:1}}
+.iq-card{width:min(560px,100%);margin:auto;text-align:center;color:#f3ead2;padding:var(--s4) var(--s3)}
+.iq-sub{font-size:var(--t-s);opacity:.85;margin-top:-6px}
+.iq-stat{margin-top:var(--s4);font-size:var(--t-s);color:#e9c77b;min-height:22px}
+.iq-left{font-size:var(--t-xs);opacity:.75;margin-top:var(--s1)}
+.iq-btns{display:flex;flex-direction:column;gap:var(--s2);align-items:center;margin-top:var(--s5)}
+.iq-btns .btn{min-width:240px;background:#e9c77b;color:#12342e}.iq-btns .btn:hover{background:#f1d695}
+.iq-btns .btn.ghost{background:transparent;color:#f3ead2;border-color:rgba(243,234,210,.35)}
+.iq-btns .btn.ghost:hover{background:rgba(243,234,210,.08)}
+.iq-cr{margin-top:var(--s4);font-size:12px;opacity:.6}
+
+.iq-stage{position:relative;height:clamp(230px,42vh,330px);margin-top:var(--s2)}
+.iq-w{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;transform:translateY(18px) scale(.94);filter:blur(8px);
+  transition:opacity .55s ease,transform .7s cubic-bezier(.2,.8,.2,1),filter .55s ease}
+.iq-w.on{opacity:1;transform:none;filter:none;transition-delay:.14s}
+.iq-w.out{opacity:0;transform:translateY(-14px) scale(1.03);filter:blur(6px);transition:opacity .26s ease,transform .4s ease,filter .3s ease}
+.iq-ar{font-size:clamp(64px,19vw,120px);line-height:1.7;color:#e9c77b;text-shadow:0 0 40px rgba(233,199,123,.35);white-space:nowrap}
+.iq-ru{font-size:clamp(20px,5.2vw,28px);color:#f3ead2;opacity:0;transform:translateY(8px);
+  transition:opacity .5s ease .18s,transform .6s ease .18s;margin-top:-4px}
+.iq-w.on .iq-ru{opacity:.92;transform:none}
+.iq-ayn{font-size:26px;color:rgba(243,234,210,.7);min-height:40px;line-height:1.5}
+.iq-dots{display:flex;gap:9px;justify-content:center;margin-top:2px}
+.iq-dot{width:8px;height:8px;border-radius:50%;background:rgba(243,234,210,.25);transition:.3s}
+.iq-dot.on{background:#e9c77b}.iq-dot.cur{transform:scale(1.55);box-shadow:0 0 8px rgba(233,199,123,.7)}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -465,6 +494,7 @@ function home(){
     <button class="btn ghost sm" id="mblitz">⚡ Блиц</button>
   </div>
   <div class="set"><label class="sw"><input type="checkbox" id="ru" ${S.ru?'checked':''}> Показывать перевод на русский</label>
+  <label class="sw"><input type="checkbox" id="iqon" ${S.iqra!==false?'checked':''}> «اقْرَأْ» при выходе из занятия</label>
   <span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" id="mtest">🎤 Микрофон</button><button class="btn ghost sm" id="reset">Сбросить</button></span></div><div id="mres" class="mic-note" style="text-align:left;margin-top:10px"></div>`;
   $('#lessel').onchange=e=>{S.les=+e.target.value;save();home()};
   $('#go').onclick=()=>start('mix');
@@ -472,6 +502,7 @@ function home(){
   $('#mblitz').onclick=()=>{if(modeOff(modeById('blitz')))return alert('В этом уроке мало картинок для блица — выберите другой урок.');start('blitz')};
   $$('.grp:not(.off)').forEach(b=>b.onclick=()=>group(b.dataset.g));
   $('#ru').onchange=e=>{S.ru=e.target.checked;save()};
+  $('#iqon').onchange=e=>{S.iqra=e.target.checked;save()};
   $('#mtest').onclick=micTest;
   $('#reset').onclick=()=>{if(confirm('Сбросить весь прогресс?')){S={xp:0,streak:0,best:0,box:{},blitz:0,ru:S.ru,les:S.les};save();home()}};
 }
@@ -484,7 +515,123 @@ function group(id){
   $('#bk').onclick=home;
   $$('.mode:not(.off)').forEach(b=>b.onclick=()=>start(b.dataset.m));
 }
-$('#brand').onclick=home;
+$('#brand').onclick=()=>tryLeave();
+
+
+/* ===== «اقْرَأْ» — напоминание при выходе из незаконченного занятия (сура 96 «Аль-Аляк», аяты 1–5) ===== */
+const IQRA_SRC=[ // по аяту: SSSAAA.mp3; первый рабочий источник используется до конца
+ {name:'Сауд аш-Шурайм',cr:'everyayah.com',url:a=>`https://everyayah.com/data/Saood_ash-Shuraym_128kbps/096${a}.mp3`},
+ {name:'Абдул-Басит (муджаввад)',cr:'quran.com',url:a=>`https://verses.quran.foundation/AbdulBaset/Mujawwad/mp3/096${a}.mp3`},
+ {name:'Абдул-Басит',cr:'everyayah.com',url:a=>`https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/096${a}.mp3`}
+];
+// аяты 1–5 по словам: [арабское слово, смысл по-русски]
+const IQRA=[
+ [['اقْرَأْ','Читай'],['بِاسْمِ','во имя'],['رَبِّكَ','Господа твоего'],['الَّذِي','Который'],['خَلَقَ','сотворил']],
+ [['خَلَقَ','Сотворил'],['الْإِنسَانَ','человека'],['مِنْ','из'],['عَلَقٍ','сгустка']],
+ [['اقْرَأْ','Читай'],['وَرَبُّكَ','и Господь твой'],['الْأَكْرَمُ','Щедрейший']],
+ [['الَّذِي','Который'],['عَلَّمَ','научил'],['بِالْقَلَمِ','посредством пера']],
+ [['عَلَّمَ','Научил'],['الْإِنسَانَ','человека'],['مَا','тому, что'],['لَمْ','не'],['يَعْلَمْ','знал']]
+];
+const IQRA_LAST=IQRA.length;
+const AR_NUM='١٢٣٤٥';
+let iq=null;
+function sessionOpen(){return !!(R&&R.qs&&R.i<R.n&&!['blitz'].includes(R.startId))}
+function tryLeave(){if(sessionOpen()&&S.iqra!==false)return iqraShow();home()}
+function iqraStop(){if(!iq)return;iq.stopped=true;cancelAnimationFrame(iq.raf);clearTimeout(iq.tm);
+  try{iq.a.pause();iq.a.removeAttribute('src');iq.a.load()}catch(e){}
+  const o=$('#iqra');if(o)o.remove();document.removeEventListener('keydown',iq.key,true);iq=null}
+
+// веса слов для синхронизации внутри аята: длина слова, у последнего — протяжка в конце аята
+const wWeight=(ay,i)=>Math.max(2,strip(ay[i][0]).length)+(i===ay.length-1?3:0);
+function wordAt(ay,frac){const ws=ay.map((_,i)=>wWeight(ay,i)),tot=ws.reduce((a,b)=>a+b,0);
+  let acc=0;for(let i=0;i<ws.length;i++){acc+=ws[i]/tot;if(frac<acc)return i}return ws.length-1}
+
+function iqraWord(ayah,idx,final){ // плавная смена слова: старое уходит вверх, новое проявляется
+  const st=$('#iqstage');if(!st)return;
+  const [ar,ru]=IQRA[ayah-1][idx];
+  st.querySelectorAll('.iq-w').forEach(e=>{e.classList.remove('on');e.classList.add('out');setTimeout(()=>e.remove(),700)});
+  const el=document.createElement('div');el.className='iq-w';
+  el.innerHTML=`<div class="iq-ar ar">${ar}</div><div class="iq-ru">${ru}</div>`;
+  st.appendChild(el);requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('on')));
+  $('#iqay').textContent=final?'':`﴿${AR_NUM[ayah-1]}﴾`;
+  $$('.iq-dot').forEach((d,i)=>{d.classList.toggle('on',i<ayah-1||(i===ayah-1&&!final)||final);d.classList.toggle('cur',i===ayah-1&&!final)});
+}
+
+function iqraShow(){
+  try{speechSynthesis.cancel();if(window._a)window._a.pause()}catch(e){}
+  const left=R.n-R.qs.filter(q=>q&&((q.ans!=null)||q.done===true||q.rated!=null)).length;
+  const o=document.createElement('div');o.id='iqra';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');
+  o.setAttribute('aria-label','Сура «Аль-Аляк», аяты 1–5');
+  o.innerHTML=`<div class="iq-card">
+    <div class="iq-sub">Сура «Аль-Аляк» · первое откровение</div>
+    <div class="iq-stage" id="iqstage" aria-live="polite"></div>
+    <div class="iq-ayn ar" id="iqay"></div>
+    <div class="iq-dots">${IQRA.map(()=>'<i class="iq-dot"></i>').join('')}</div>
+    <div class="iq-stat" id="iqst">Загружаю чтение…</div>
+    <div class="iq-left">До конца занятия ${left===1?'остался 1 вопрос':`осталось ${left} ${left>=2&&left<=4?'вопроса':'вопросов'}`}</div>
+    <div class="iq-btns"><button class="btn" id="iqgo">Продолжить занятие</button>
+      <button class="btn ghost sm" id="iqmute">🔇 Тише</button>
+      <button class="btn ghost sm" id="iqout">Всё равно выйти</button></div>
+    <div class="iq-cr" id="iqcr"></div></div>`;
+  document.body.appendChild(o);
+  iq={a:new Audio(),src:0,ayah:1,w:-1,stopped:false,started:false,silent:false,raf:0,tm:0,
+      key:e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();iqraStop()}}};
+  document.addEventListener('keydown',iq.key,true);
+  $('#iqgo').onclick=()=>iqraStop();
+  $('#iqout').onclick=()=>{iqraStop();home()};
+  $('#iqmute').onclick=()=>{if(!iq)return;if(!iq.started&&!iq.silent&&iq.a.paused){iq.a.muted=false;$('#iqmute').textContent='🔇 Тише';return iqraPlay()}iq.a.muted=!iq.a.muted;$('#iqmute').textContent=iq.a.muted?'🔊 Звук':'🔇 Тише'};
+  iqraWord(1,0);iq.w=0;           // сразу «اقْرَأْ — Читай»
+  $('#iqgo').focus();
+  iqraPlay();
+}
+
+function iqraTick(){ // слово следует за голосом чтеца
+  if(!iq||iq.stopped)return;
+  const a=iq.a,ay=IQRA[iq.ayah-1];
+  if(a.duration&&isFinite(a.duration)){
+    const lead=0.12; // слово появляется чуть раньше звука
+    const frac=Math.min(.999,Math.max(0,(a.currentTime+lead)/a.duration));
+    const i=wordAt(ay,frac);
+    if(i!==iq.w){iq.w=i;iqraWord(iq.ayah,i)}
+  }
+  iq.raf=requestAnimationFrame(iqraTick);
+}
+
+function iqraDone(){
+  if(!iq)return;cancelAnimationFrame(iq.raf);
+  iqraWord(1,0,true); // в конце — снова «اقْرَأْ»
+  $('#iqst').textContent='Первые пять аятов прочитаны';
+}
+
+function iqraSilent(){ // нет звука — слова идут сами, по ~0,9 с
+  if(!iq||iq.stopped)return;iq.silent=true;
+  $('#iqst').textContent='Нет интернета — чтение без звука';
+  const step=()=>{if(!iq||iq.stopped)return;
+    const ay=IQRA[iq.ayah-1];
+    if(iq.w<ay.length-1){iq.w++;iqraWord(iq.ayah,iq.w)}
+    else if(iq.ayah<IQRA_LAST){iq.ayah++;iq.w=0;iqraWord(iq.ayah,0)}
+    else return iqraDone();
+    iq.tm=setTimeout(step,iq.w===IQRA[iq.ayah-1].length-1?1400:900)};
+  iq.tm=setTimeout(step,1100);
+}
+
+function iqraPlay(){
+  if(!iq||iq.stopped)return;
+  const s=IQRA_SRC[iq.src];
+  if(!s)return iqraSilent();
+  const a=iq.a,num=String(iq.ayah).padStart(3,'0');
+  a.onerror=()=>{if(!iq||iq.stopped)return;
+    if(!iq.started){iq.src++;iq.ayah=1;return iqraPlay()} // источник не открылся — следующий
+    iq.ayah++;iq.w=-1;if(iq.ayah<=IQRA_LAST)iqraPlay();else iqraDone()};
+  a.onplaying=()=>{if(!iq)return;iq.started=true;
+    $('#iqst').textContent=`Аят ${iq.ayah} из ${IQRA_LAST}`;$('#iqcr').textContent=`Чтец: ${s.name} · ${s.cr}`;
+    cancelAnimationFrame(iq.raf);iq.raf=requestAnimationFrame(iqraTick)};
+  a.onended=()=>{if(!iq||iq.stopped)return;cancelAnimationFrame(iq.raf);
+    iq.ayah++;iq.w=-1;
+    if(iq.ayah<=IQRA_LAST)iqraPlay();else iqraDone()};
+  a.src=s.url(num);a.volume=1;
+  const pr=a.play();if(pr)pr.catch(err=>{if(err&&err.name==='NotAllowedError'&&$('#iqst'))$('#iqst').textContent='Нажмите «🔊 Звук», чтобы услышать чтение'})
+}
 
 /* --- навигация по вопросам --- */
 const answered=q=>!!q&&((q.ans!=null)||q.done===true||q.rated!=null);
@@ -496,7 +643,7 @@ function start(m){if(m==='vocab')return vocab();
 function go(d){R.i+=d;if(R.i>=R.n)return finish();render()}
 function bar(){const q=R.qs[R.i];
   return `<div class="top"><button class="back" id="bk">☰ Меню</button><div class="nav"><button class="navb" id="pv" aria-label="Назад">←</button><span class="cnt">${R.i+1} / ${R.n}</span><button class="navb" id="nq" aria-label="Вперёд">→</button></div></div><div class="prog"><i id="pg" style="width:${(R.i+(answered(q)?1:0))/R.n*100}%"></i></div>`}
-function navBind(){$('#bk').onclick=home;$('#pv').onclick=()=>go(-1);$('#nq').onclick=()=>go(1);updNav()}
+function navBind(){$('#bk').onclick=tryLeave;$('#pv').onclick=()=>go(-1);$('#nq').onclick=()=>go(1);updNav()}
 function updNav(){const q=R.qs[R.i];$('#pv').disabled=R.i===0;$('#nq').disabled=!answered(q);$('#pg').style.width=(R.i+(answered(q)?1:0))/R.n*100+'%'}
 const recent=()=>R.qs.slice(-3).flatMap(q=>q.t?[q.t.ar]:q.set?q.set.map(w=>w.ar):[]);
 function make(m){
