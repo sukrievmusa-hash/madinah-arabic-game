@@ -813,8 +813,8 @@ const VIDEOS=[
 const VIDEO_TOTAL=24;
 const PL_IDS=()=>{try{return JSON.parse(localStorage.getItem('madinah_pl')||'{}')}catch(e){return{}}};
 function plSave(o){try{localStorage.setItem('madinah_pl',JSON.stringify({...PL_IDS(),...o}))}catch(e){}}
-const vidOf=n=>{const c=PL_IDS(),fromPl=c.ids&&c.ids[n-1]?{id:c.ids[n-1]}:{},tt=c.t&&c.t[n]?{t:c.t[n]}:{};
-  return Object.assign({n,id:null,t:n===24?'24 урок · Общее повторение':`${n} урок`,les:n===24?0:n},fromPl,tt,VIDEOS.find(v=>v.n===n)||{})};
+const vidOf=n=>{const c=PL_IDS(),fromPl=c.ids&&c.ids[n-1]?{id:c.ids[n-1]}:{},lm=c.map&&c.map[n]?{id:c.map[n]}:{},tt=c.t&&c.t[n]?{t:c.t[n]}:{};
+  return Object.assign({n,id:null,t:n===24?'24 урок · Общее повторение':`${n} урок`,les:n===24?0:n},fromPl,lm,tt,VIDEOS.find(v=>v.n===n)||{})};
 // YouTube IFrame API: плейлист сам отдаёт коды всех 24 видео
 let ytReady=null;
 function ytApi(){if(ytReady)return ytReady;
@@ -823,7 +823,7 @@ function ytApi(){if(ytReady)return ytReady;
     const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';s.onerror=()=>{ytReady=null;no()};document.head.appendChild(s);
     setTimeout(()=>no(new Error('timeout')),12000)});
   return ytReady}
-let ytPlayer=null;
+let ytPlayer=null;const ytFix={};
 function ytMount(n){
   const box=$('#vbox');if(!box)return;
   if(ytPlayer){try{ytPlayer.destroy()}catch(e){}ytPlayer=null}
@@ -841,7 +841,11 @@ function ytMount(n){
           const pl=e.target.getPlaylist&&e.target.getPlaylist();
           if(pl&&pl.length)plSave({ids:pl});
           const d=e.target.getVideoData&&e.target.getVideoData();
-          if(d&&d.title){const c=PL_IDS();plSave({t:{...(c.t||{}),[n]:d.title}});const h=$('#vtitle');if(h)h.textContent=d.title}
+          if(d&&d.title){const c=PL_IDS(),m=d.title.match(/(\d+)\s*[-–]?\s*(?:УРОК|урок|Урок)/),k=m?+m[1]:n;
+            if(m&&d.video_id)plSave({map:{...(c.map||{}),[k]:d.video_id}});
+            plSave({t:{...(c.t||{}),[k]:d.title}});
+            if(k!==n&&!ytFix[n]){ytFix[n]=1;const w=vidOf(n);if(w.id&&w.id!==d.video_id){ytMount(n);return}}
+            if(k===n){const h=$('#vtitle');if(h)h.textContent=d.title}}
         }catch(err){}},
         onError:fail}});
   }).catch(fail);
@@ -865,7 +869,7 @@ function videos(){
 function video(n){
   setKeys(null);R=null;
   const v=vidOf(n),s=vState(n);
-  const yt=v.id?`https://www.youtube.com/watch?v=${v.id}&list=${PLAYLIST}&index=${n}`:`https://www.youtube.com/watch?list=${PLAYLIST}&index=${n}`;
+  const yt=v.id?`https://www.youtube.com/watch?v=${v.id}`:`https://www.youtube.com/watch?list=${PLAYLIST}&index=${n}`;
   app.innerHTML=`<div class="top"><button class="back" id="bk">← К списку</button><span class="cnt">${n} / ${VIDEO_TOTAL}</span></div>
   <h1 id="vtitle">${v.t}</h1>
   <div class="vframe" id="vbox"></div>
