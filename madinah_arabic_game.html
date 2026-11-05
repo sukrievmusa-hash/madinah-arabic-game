@@ -813,7 +813,7 @@ const VIDEOS=[
 const VIDEO_TOTAL=24;
 const PL_IDS=()=>{try{return JSON.parse(localStorage.getItem('madinah_pl')||'{}')}catch(e){return{}}};
 function plSave(o){try{localStorage.setItem('madinah_pl',JSON.stringify({...PL_IDS(),...o}))}catch(e){}}
-const vidOf=n=>{const c=PL_IDS(),fromPl=n>=3&&c.ids&&c.ids[n-2]?{id:c.ids[n-2]}:{},lm=c.map&&c.map[n]?{id:c.map[n]}:{},tt=c.t&&c.t[n]?{t:c.t[n]}:{};
+const vidOf=n=>{const c=PL_IDS(),fromPl={},lm=c.map&&c.map[n]?{id:c.map[n]}:{},tt=c.t&&c.t[n]?{t:c.t[n]}:{};
   return Object.assign({n,id:null,t:n===24?'24 урок · Общее повторение':`${n} урок`,les:n===24?0:n},fromPl,lm,tt,VIDEOS.find(v=>v.n===n)||{})};
 // YouTube IFrame API: плейлист сам отдаёт коды всех 24 видео
 let ytReady=null;
@@ -829,6 +829,7 @@ function ytMount(n){
   if(ytPlayer){try{ytPlayer.destroy()}catch(e){}ytPlayer=null}
   box.innerHTML='<div id="vplayer"></div>';
   const v=vidOf(n);
+  if(!v.id){box.innerHTML='<div class="vsoon">Подбираю видео этого урока по названию… Вернитесь к списку, подождите несколько секунд и откройте урок снова. Задания уже готовы.</div>';plBoot();return}
   const fail=()=>{if(!$('#vbox'))return;$('#vbox').innerHTML=`<div class="vsoon">Видео не загрузилось здесь — откройте его на YouTube кнопкой ниже. Задания уже готовы.</div>`};
   ytApi().then(()=>{
     if(!$('#vplayer'))return;
@@ -836,7 +837,7 @@ function ytMount(n){
     ytPlayer=new YT.Player('vplayer',{host:'https://www.youtube-nocookie.com',width:'100%',height:'100%',
       videoId:v.id||undefined,playerVars:v.id?pv:{...pv,listType:'playlist',list:PLAYLIST},
       events:{
-        onReady:e=>{if(!v.id)e.target.cuePlaylist({listType:'playlist',list:PLAYLIST,index:n>=3?n-2:n-1})},
+        onReady:e=>{if(!v.id)e.target.cuePlaylist({listType:'playlist',list:PLAYLIST,index:n-1})},
         onStateChange:e=>{try{
           const pl=e.target.getPlaylist&&e.target.getPlaylist();
           if(pl&&pl.length)plSave({ids:pl});
@@ -850,11 +851,38 @@ function ytMount(n){
         onError:fail}});
   }).catch(fail);
 }
+// Названия всех видео плейлиста (oEmbed) → номер урока берётся из названия, а не из позиции
+let plScan=false;
+async function plLearn(ids){
+  if(plScan||!ids||!ids.length)return;plScan=true;
+  try{
+    const c=PL_IDS(),map={...(c.map||{})},t={...(c.t||{})};
+    const known=new Set(Object.values(map));
+    await Promise.all(ids.filter(id=>!known.has(id)).map(async id=>{
+      try{
+        const r=await fetch('https://www.youtube.com/oembed?format=json&url='+encodeURIComponent('https://www.youtube.com/watch?v='+id));
+        if(!r.ok)return;const j=await r.json();
+        const m=(j.title||'').match(/(\d+)\s*[-–]?\s*(?:УРОК|урок|Урок)/);
+        if(m){map[+m[1]]=id;t[+m[1]]=j.title}
+      }catch(e){}}));
+    plSave({map,t});
+    if($('.vlist'))videos();
+  }catch(e){}
+  plScan=false}
+// скрытый плеер, чтобы получить список кодов плейлиста, если он ещё не известен
+function plBoot(){
+  const c=PL_IDS();
+  if(c.ids&&c.ids.length){plLearn(c.ids);return}
+  const d=document.createElement('div');d.id='plboot';d.style.cssText='position:absolute;left:-9999px;width:10px;height:10px';document.body.appendChild(d);
+  ytApi().then(()=>{const pl=new YT.Player('plboot',{host:'https://www.youtube-nocookie.com',width:'10',height:'10',
+    playerVars:{listType:'playlist',list:PLAYLIST},
+    events:{onReady:e=>{let n=0;const t=setInterval(()=>{let ids=[];try{ids=e.target.getPlaylist()||[]}catch(x){}
+      if(ids.length||++n>20){clearInterval(t);if(ids.length){plSave({ids});plLearn(ids)}try{pl.destroy()}catch(x){}d.remove()}},500)}}})}).catch(()=>{d.remove()})}
 const vState=n=>(S.vid||{})[n]||{};
 function vSet(n,o){S.vid=S.vid||{};S.vid[n]={...vState(n),...o};save()}
 function ytStop(){if(ytPlayer){try{ytPlayer.destroy()}catch(e){}ytPlayer=null}}
 function videos(){
-  setKeys(null);R=null;ytStop();
+  setKeys(null);R=null;ytStop();setTimeout(plBoot,300);
   const done=Object.values(S.vid||{}).filter(v=>v.best>=7).length;
   app.innerHTML=`<div class="top"><button class="back" id="bk">← Меню</button></div>
   <h1>🎬 Видеоуроки</h1><p class="sub">«Мединский курс 1 том» · устаз Абдуллах. Посмотрите урок, затем пройдите задания по нему.</p>
@@ -869,7 +897,7 @@ function videos(){
 function video(n){
   setKeys(null);R=null;
   const v=vidOf(n),s=vState(n);
-  const yt=v.id?`https://www.youtube.com/watch?v=${v.id}`:`https://www.youtube.com/watch?list=${PLAYLIST}&index=${n}`;
+  const yt=v.id?`https://www.youtube.com/watch?v=${v.id}`:`https://www.youtube.com/playlist?list=${PLAYLIST}`;
   app.innerHTML=`<div class="top"><button class="back" id="bk">← К списку</button><span class="cnt">${n} / ${VIDEO_TOTAL}</span></div>
   <h1 id="vtitle">${v.t}</h1>
   <div class="vframe" id="vbox"></div>
