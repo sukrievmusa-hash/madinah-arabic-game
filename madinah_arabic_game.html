@@ -124,7 +124,8 @@ h1{font-size:26px;letter-spacing:-.02em;margin:4px 0 6px;font-weight:600}
 .start{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:3px;align-items:center;
   width:100%;background:var(--teal);color:#fff;padding:17px;border-radius:18px;text-align:center;transition:.15s;margin-top:4px}
 .start:hover{background:var(--teal2);transform:translateY(-2px)}
-.start b{font-size:18px}.start span{font-size:13px;opacity:.82}
+.start b{font-size:18px}
+.start.main{padding:26px 18px;border-radius:20px;gap:6px;box-shadow:0 6px 18px rgba(31,79,70,.28);margin-bottom:6px}.start.main b{font-size:23px}.start.main span{font-size:14px;opacity:.9}.start span{font-size:13px;opacity:.82}
 .gsub{text-align:center;font-size:13px;color:var(--mute);margin:16px 0 8px}
 .groups{display:grid;gap:10px}
 .grp{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:13px;padding:14px 16px;
@@ -635,8 +636,8 @@ function home(){
     <optgroup label="Книга 2">${LESSONS.filter(l=>l.n>10).map(l=>`<option value="${l.n}"${S.les===l.n?' selected':''}>Урок ${l.n-10} · ${l.t}</option>`).join('')}</optgroup></select></label>
   <div class="prog"><i style="width:${pool.length?m/pool.length*100:0}%"></i></div>
   <div class="lest">Выучено ${m} из ${pool.length}${S.best?` · лучшая серия ${S.best}`:''}</div>
-  <button class="start" id="go"><b>▶ Заниматься</b><span>10 заданий вперемешку${S.les?` · ${lesLabel(S.les).toLowerCase()}`:''}</span></button>
-  <button class="grp vgo" id="vids"><span class="e">🎬</span><span class="gt"><b>Видеоуроки</b><small>Устаз Абдуллах · смотреть и закреплять</small></span><span class="cnt2">${VIDEO_TOTAL}</span></button>
+  <button class="start main" id="vids"><b>🎬 Видеоуроки курса</b><span>Устаз Абдуллах · ${VIDEO_TOTAL} уроков · смотреть и закреплять заданиями</span></button>
+  <button class="grp vgo" id="go"><span class="e">▶</span><span class="gt"><b>Заниматься</b><small>10 заданий вперемешку${S.les?` · ${lesLabel(S.les).toLowerCase()}`:''}</small></span></button>
   <div class="gsub">Или выберите занятие сами</div>
   <div class="groups">${GROUPS.map(g=>{const n=liveModes(g.m).length;
     return `<button class="grp${n?'':' off'}" data-g="${g.id}"${n?'':' disabled'}><span class="e">${g.e}</span><span class="gt"><b>${g.t}</b><small>${n?g.d:'нет заданий для этого урока'}</small></span><span class="cnt2">${n}</span></button>`}).join('')}</div>
