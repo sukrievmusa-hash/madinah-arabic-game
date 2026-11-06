@@ -135,6 +135,7 @@ h1{font-size:26px;letter-spacing:-.02em;margin:4px 0 6px;font-weight:600}
 .grp b{font-size:16px}.grp small{font-size:13px;color:var(--mute)}
 .grp .cnt2{font-size:13px;color:var(--mute);background:#ece6d6;border-radius:999px;padding:3px 10px}
 .grp.off{opacity:.45;cursor:default}.grp.off:hover{transform:none;border-color:var(--line)}
+.supbox{background:#fff;border:2px solid var(--brass,#b8893b);border-radius:18px;padding:20px 16px;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;margin-top:10px}.suph{font-weight:700;color:var(--teal);font-size:16px}.supnum{font-size:26px;font-weight:700;letter-spacing:2px;direction:ltr;user-select:all;word-break:break-all}.supnote{font-size:14px;opacity:.75}
 .mini{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px}
 
 /* =====================================================================
@@ -645,6 +646,7 @@ function home(){
     <button class="btn ghost sm" id="mvoc">📚 Словарь</button>
     <button class="btn ghost sm" id="mblitz">⚡ Блиц</button>
   </div>
+  <div class="mini"><button class="btn ghost sm" id="msup">💛 Поддержать автора</button></div>
   <div class="set"><label class="sw"><input type="checkbox" id="ru" ${S.ru?'checked':''}> Показывать перевод на русский</label>
   <label class="sw"><input type="checkbox" id="iqon" ${S.iqra!==false?'checked':''}> «اقْرَأْ» при выходе из занятия</label>
   <span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" id="stest">🔊 Звук</button><button class="btn ghost sm" id="mtest">🎤 Микрофон</button><button class="btn ghost sm" id="reset">Сбросить</button></span></div><div id="mres" class="mic-note" style="text-align:left;margin-top:10px"></div>`;
@@ -652,6 +654,7 @@ function home(){
   $('#go').onclick=()=>start('mix');
   $('#vids').onclick=videos;
   $('#mvoc').onclick=()=>start('vocab');
+  $('#msup').onclick=support;
   $('#mblitz').onclick=()=>{if(modeOff(modeById('blitz')))return alert('В этом уроке мало картинок для блица — выберите другой урок.');start('blitz')};
   $$('.grp[data-g]:not(.off)').forEach(b=>b.onclick=()=>group(b.dataset.g));
   $('#ru').onchange=e=>{S.ru=e.target.checked;save()};
@@ -659,6 +662,24 @@ function home(){
   $('#mtest').onclick=micTest;
   $('#stest').onclick=soundTest;
   $('#reset').onclick=()=>{if(confirm('Сбросить весь прогресс?')){S={xp:0,streak:0,best:0,box:{},blitz:0,ru:S.ru,les:S.les};save();home()}};
+}
+const SUPPORT={bank:'Kaspi',card:'4400 4300 2945 5299',name:'Муса Ш.'};
+function support(){
+  setKeys(null);
+  app.innerHTML=`<div class="top"><button class="back" id="bk">← Назад</button></div>
+  <h1>💛 Поддержать автора</h1>
+  <p class="sub">Игра бесплатная. Если она помогает вам учить арабский и понимать Коран, вы можете поддержать автора переводом — любая сумма, по возможности.</p>
+  <div class="supbox"><div class="suph">${SUPPORT.bank}${SUPPORT.name?' · '+SUPPORT.name:''}</div>
+  <div class="supnum" id="supnum">${SUPPORT.card}</div>
+  <button class="btn" id="supcopy">📋 Скопировать номер карты</button>
+  <div class="supnote" id="supnote">Откройте приложение банка и вставьте номер в перевод.</div></div>
+  <p class="sub" style="margin-top:14px">Баракаллаху фикум. Пусть Аллах примет от нас.</p>`;
+  $('#bk').onclick=home;
+  $('#supcopy').onclick=()=>{
+    const t=SUPPORT.card.replace(/\s/g,''),n=$('#supnote');
+    const ok=()=>{n.textContent='Номер скопирован ✓'};
+    const fb=()=>{try{const r=document.createRange();r.selectNodeContents($('#supnum'));const g=getSelection();g.removeAllRanges();g.addRange(r);document.execCommand('copy');ok()}catch(e){n.textContent='Нажмите и удерживайте номер, чтобы скопировать'}};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,fb);else fb()};
 }
 function group(id){
   const g=GROUPS.find(x=>x.id===id),list=g.m.map(modeById).filter(Boolean);
