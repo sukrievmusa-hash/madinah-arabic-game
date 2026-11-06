@@ -135,6 +135,7 @@ h1{font-size:26px;letter-spacing:-.02em;margin:4px 0 6px;font-weight:600}
 .grp b{font-size:16px}.grp small{font-size:13px;color:var(--mute)}
 .grp .cnt2{font-size:13px;color:var(--mute);background:#ece6d6;border-radius:999px;padding:3px 10px}
 .grp.off{opacity:.45;cursor:default}.grp.off:hover{transform:none;border-color:var(--line)}
+.hr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}.supbtn{all:unset;box-sizing:border-box;cursor:pointer;min-height:44px;display:inline-flex;align-items:center;padding:0 14px;border-radius:999px;border:1.5px solid var(--brass,#b8893b);color:var(--teal);font-weight:600;font-size:14px;background:#fff}
 .supbox{background:#fff;border:2px solid var(--brass,#b8893b);border-radius:18px;padding:20px 16px;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;margin-top:10px}.suph{font-weight:700;color:var(--teal);font-size:16px}.supnum{font-size:26px;font-weight:700;letter-spacing:2px;direction:ltr;user-select:all;word-break:break-all}.supnote{font-size:14px;opacity:.75}
 .mini{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px}
 
@@ -272,7 +273,7 @@ button:focus-visible,select:focus-visible,input:focus-visible,.mode:focus-visibl
 <div class="wrap">
   <header>
     <div class="brand" id="brand"><div class="logo ar">ع</div><div><b>Арабский через образы</b><small>Медина · книги 1–2</small></div></div>
-    <div class="chips"><span class="chip" id="cXp">⭐ 0</span><span class="chip" id="cSt">🔥 0</span></div>
+    <div class="hr"><div class="chips"><span class="chip" id="cXp">⭐ 0</span><span class="chip" id="cSt">🔥 0</span></div><button class="supbtn" id="hsup" aria-label="Поддержать автора">💛 Поддержать автора</button></div>
   </header>
   <main class="card" id="app"></main>
   <div class="warn hide" id="voiceWarn"><span>🔇 Нет звука — нужен арабский голос (не только приложение, а арабский голосовой пакет).</span><button class="btn sm" onclick="installVoice()">Как включить</button></div>
@@ -646,7 +647,6 @@ function home(){
     <button class="btn ghost sm" id="mvoc">📚 Словарь</button>
     <button class="btn ghost sm" id="mblitz">⚡ Блиц</button>
   </div>
-  <div class="mini"><button class="btn ghost sm" id="msup">💛 Поддержать автора</button></div>
   <div class="set"><label class="sw"><input type="checkbox" id="ru" ${S.ru?'checked':''}> Показывать перевод на русский</label>
   <label class="sw"><input type="checkbox" id="iqon" ${S.iqra!==false?'checked':''}> «اقْرَأْ» при выходе из занятия</label>
   <span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" id="stest">🔊 Звук</button><button class="btn ghost sm" id="mtest">🎤 Микрофон</button><button class="btn ghost sm" id="reset">Сбросить</button></span></div><div id="mres" class="mic-note" style="text-align:left;margin-top:10px"></div>`;
@@ -654,7 +654,6 @@ function home(){
   $('#go').onclick=()=>start('mix');
   $('#vids').onclick=videos;
   $('#mvoc').onclick=()=>start('vocab');
-  $('#msup').onclick=support;
   $('#mblitz').onclick=()=>{if(modeOff(modeById('blitz')))return alert('В этом уроке мало картинок для блица — выберите другой урок.');start('blitz')};
   $$('.grp[data-g]:not(.off)').forEach(b=>b.onclick=()=>group(b.dataset.g));
   $('#ru').onchange=e=>{S.ru=e.target.checked;save()};
@@ -691,6 +690,7 @@ function group(id){
   $$('.mode:not(.off)').forEach(b=>b.onclick=()=>start(b.dataset.m));
 }
 $('#brand').onclick=()=>tryLeave();
+$('#hsup').onclick=support;
 
 
 /* ===== «اقْرَأْ» — напоминание при выходе из незаконченного занятия (сура 96 «Аль-Аляк», аяты 1–5) ===== */
